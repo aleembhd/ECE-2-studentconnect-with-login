@@ -24,10 +24,10 @@
 
 .department-title {
   text-align: center; /* Center the text */
-  font-size: 24px; /* Adjust font size for desktop */
+  font-size: 22px; /* Adjust font size for desktop */
 }
 
-.highlight {
+.highlight1 {
   /* color: #FF5733; Choose a catchy color (e.g., a vibrant orange) */
   white-space: nowrap; /* Prevents line breaks within the text */
 }
