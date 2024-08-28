@@ -22,6 +22,40 @@
   --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
+.department-title {
+  text-align: center; /* Center the text */
+  font-size: 24px; /* Adjust font size for desktop */
+}
+
+.highlight {
+  /* color: #FF5733; Choose a catchy color (e.g., a vibrant orange) */
+  white-space: nowrap; /* Prevents line breaks within the text */
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .department-title {
+      font-size: 17px; /* Adjust font size for mobile */
+  }
+}
+
+.section-title {
+  text-align: center; /* Center the text */
+  font-size: 20px; /* Base font size for desktop */
+  /* padding-top: 0px; */
+}
+
+.highlight {
+  color: #4CAF50; /* Choose a catchy color (e.g., a vibrant green) */
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .section-title {
+      font-size: 18px; /* Adjust font size for mobile */
+  }
+}
+
 body {
   font-family: 'Roboto', sans-serif;
   background-color: var(--background-color);
