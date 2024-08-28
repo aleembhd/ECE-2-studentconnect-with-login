@@ -69,96 +69,96 @@ const students = [
   { rollNumber: '23WJ5A0414', name: 'MAHADEVUNI NAVYA', parentPhone: '9948128561', parentName: '', studentPhone: '9704484691' },
   { rollNumber: '23WJ5A0415', name: 'MD SALMAN', parentPhone: '8106150473', parentName: 'MD Khaja', studentPhone: '9652047325' },
   { rollNumber: '21WJ1A04K1', name: 'M. ADNAN', parentPhone: '9642337786', parentName: 'Nayeem hussain', studentPhone: '8008065856' },
-  ];
+];
 
-  let messageLogs = [];
+let messageLogs = [];
 
-  // Simulated server-side database
-  const localStorageDatabase = {
-saveMessage: function(log) {
-  let messages = JSON.parse(localStorage.getItem('messageLogs')) || [];
-  messages.push(log);
-  this.cleanupOldMessages(messages);
-  localStorage.setItem('messageLogs', JSON.stringify(messages));
-},
-getAllMessages: function() {
-  return JSON.parse(localStorage.getItem('messageLogs')) || [];
-},
-cleanupOldMessages: function(messages) {
-  const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-  const filteredMessages = messages.filter(log => new Date(log.timestamp) > oneMonthAgo);
-  localStorage.setItem('messageLogs', JSON.stringify(filteredMessages));
-},
-clearAllLogs: function() {
-  localStorage.removeItem('messageLogs');
-}
+// Simulated server-side database
+const localStorageDatabase = {
+  saveMessage: function (log) {
+    let messages = JSON.parse(localStorage.getItem('messageLogs')) || [];
+    messages.push(log);
+    this.cleanupOldMessages(messages);
+    localStorage.setItem('messageLogs', JSON.stringify(messages));
+  },
+  getAllMessages: function () {
+    return JSON.parse(localStorage.getItem('messageLogs')) || [];
+  },
+  cleanupOldMessages: function (messages) {
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+    const filteredMessages = messages.filter(log => new Date(log.timestamp) > oneMonthAgo);
+    localStorage.setItem('messageLogs', JSON.stringify(filteredMessages));
+  },
+  clearAllLogs: function () {
+    localStorage.removeItem('messageLogs');
+  }
 };
-  // Fetch messages from the server when the page loads
-  document.addEventListener('DOMContentLoaded', function() {
-    fetchMessagesFromServer();
+// Fetch messages from the server when the page loads
+document.addEventListener('DOMContentLoaded', function () {
+  fetchMessagesFromServer();
   periodicCleanup();
   setupToggleButtons();
-  });
+});
 
-  function toggleMessageForm() {
+function toggleMessageForm() {
   const messageForm = document.getElementById('messageForm');
   if (messageForm.style.display === 'none') {
-      messageForm.style.display = 'block';
-      messageForm.classList.add('fade-in');
+    messageForm.style.display = 'block';
+    messageForm.classList.add('fade-in');
   } else {
-      messageForm.style.display = 'none';
+    messageForm.style.display = 'none';
   }
 }
 
 function toggleBulkMessageForm() {
   const bulkMessageForm = document.getElementById('bulkMessageForm');
   if (bulkMessageForm.style.display === 'none') {
-      bulkMessageForm.style.display = 'block';
-      bulkMessageForm.classList.add('fade-in');
-      document.getElementById('bulkMessageContent').value = ''; // Clear previous message
+    bulkMessageForm.style.display = 'block';
+    bulkMessageForm.classList.add('fade-in');
+    document.getElementById('bulkMessageContent').value = ''; // Clear previous message
   } else {
-      bulkMessageForm.style.display = 'none';
+    bulkMessageForm.style.display = 'none';
   }
 }
 
 function toggleCRProfiles() {
   const crProfiles = document.getElementById('crProfiles');
   if (crProfiles.style.display === 'none') {
-      showCRProfiles();
-      crProfiles.style.display = 'block';
-      crProfiles.classList.add('fade-in');
+    showCRProfiles();
+    crProfiles.style.display = 'block';
+    crProfiles.classList.add('fade-in');
   } else {
-      crProfiles.style.display = 'none';
+    crProfiles.style.display = 'none';
   }
 }
 
 
-  function fetchMessagesFromServer() {
-messageLogs = localStorageDatabase.getAllMessages();
-updateMessageLogs();
+function fetchMessagesFromServer() {
+  messageLogs = localStorageDatabase.getAllMessages();
+  updateMessageLogs();
 }
 
 // ... (keep all existing code above this point)
 
-document.getElementById('searchBtn').addEventListener('click', function() {
-const rollNumber = document.getElementById('rollNumber').value.toUpperCase();
-const student = students.find(s => s.rollNumber.toUpperCase().endsWith(rollNumber));
-const profileCard = document.getElementById('profileCard');
-const messageForm = document.getElementById('messageForm');
-const bulkMessageForm = document.getElementById('bulkMessageForm');
-const crProfiles = document.getElementById('crProfiles');
+document.getElementById('searchBtn').addEventListener('click', function () {
+  const rollNumber = document.getElementById('rollNumber').value.toUpperCase();
+  const student = students.find(s => s.rollNumber.toUpperCase().endsWith(rollNumber));
+  const profileCard = document.getElementById('profileCard');
+  const messageForm = document.getElementById('messageForm');
+  const bulkMessageForm = document.getElementById('bulkMessageForm');
+  const crProfiles = document.getElementById('crProfiles');
 
-// Hide other elements
-messageForm.style.display = 'none';
-bulkMessageForm.style.display = 'none';
-crProfiles.style.display = 'none';
+  // Hide other elements
+  messageForm.style.display = 'none';
+  bulkMessageForm.style.display = 'none';
+  crProfiles.style.display = 'none';
 
-// Toggle profile card visibility
-if (profileCard.style.display === 'block') {
+  // Toggle profile card visibility
+  if (profileCard.style.display === 'block') {
     profileCard.style.display = 'none';
     return; // Exit the function early if we're hiding the profile card
-}
+  }
 
   if (student) {
     document.getElementById('studentName').textContent = student.name;
@@ -180,54 +180,54 @@ if (profileCard.style.display === 'block') {
 
 // Function to hide all open elements
 function hideAllElements() {
-const elementsToHide = [
+  const elementsToHide = [
     'profileCard', 'messageForm', 'bulkMessageForm', 'crProfiles'
-];
-elementsToHide.forEach(id => {
+  ];
+  elementsToHide.forEach(id => {
     const element = document.getElementById(id);
     if (element) {
-        element.style.display = 'none';
+      element.style.display = 'none';
     }
-});
+  });
 }
 
 // Add click event listeners to other buttons to hide elements
 const buttonsToAddListener = [
-'messageAllBtn', 'exportLogsBtn', 'clearLogsBtn'
+  'messageAllBtn', 'exportLogsBtn', 'clearLogsBtn'
 ];
 
 buttonsToAddListener.forEach(id => {
-const button = document.getElementById(id);
-if (button) {
+  const button = document.getElementById(id);
+  if (button) {
     button.addEventListener('click', hideAllElements);
-}
+  }
 });
 
 // ... (keep all existing code below this point)
 
 
 function callParent() {
-    const parentPhone = document.getElementById('parentPhone').textContent;
-    const studentName = document.getElementById('studentName').textContent;
-    const studentRoll = document.getElementById('studentRoll').textContent;
-    const parentName = document.getElementById('parentName').textContent || 'Not available';
+  const parentPhone = document.getElementById('parentPhone').textContent;
+  const studentName = document.getElementById('studentName').textContent;
+  const studentRoll = document.getElementById('studentRoll').textContent;
+  const parentName = document.getElementById('parentName').textContent || 'Not available';
 
-    if (parentPhone) {
-        const cleanedNumber = parentPhone.replace(/\D/g, '');
-        const telUri = `tel:${cleanedNumber}`;
-        const startTime = new Date();
+  if (parentPhone) {
+    const cleanedNumber = parentPhone.replace(/\D/g, '');
+    const telUri = `tel:${cleanedNumber}`;
+    const startTime = new Date();
 
-        // Initiate the call
-        window.location.href = telUri;
+    // Initiate the call
+    window.location.href = telUri;
 
-        // Use a custom dialog after a delay
-        setTimeout(() => {
-            const endTime = new Date();
-            const duration = (endTime - startTime) / 1000; // duration in seconds
+    // Use a custom dialog after a delay
+    setTimeout(() => {
+      const endTime = new Date();
+      const duration = (endTime - startTime) / 1000; // duration in seconds
 
-            // Create a custom dialog
-            const dialog = document.createElement('div');
-            dialog.innerHTML = `
+      // Create a custom dialog
+      const dialog = document.createElement('div');
+      dialog.innerHTML = `
                 <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
                     <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
                         <h2>Was the call answered?</h2>
@@ -236,33 +236,33 @@ function callParent() {
                     </div>
                 </div>
             `;
-            document.body.appendChild(dialog);
+      document.body.appendChild(dialog);
 
-            function handleResponse(wasAnswered) {
-                const status = wasAnswered ? 'Answered' : 'Unanswered';
-                const log = {
-                    sender: 'Mr.NVS Murthy',
-                    recipient: cleanedNumber,
-                    studentName: studentName,
-                    studentRoll: studentRoll,
-                    parentName: parentName,
-                    message: `Call ${status}`,
-                    timestamp: new Date().toISOString(),
-                    status: status,
-                    platform: 'Call',
-                    duration: `${duration.toFixed(1)} seconds`
-                };
-                localStorageDatabase.saveMessage(log);
-                fetchMessagesFromServer();
-                document.body.removeChild(dialog);
-            }
+      function handleResponse(wasAnswered) {
+        const status = wasAnswered ? 'Answered' : 'Unanswered';
+        const log = {
+          sender: 'Mr.NVS Murthy',
+          recipient: cleanedNumber,
+          studentName: studentName,
+          studentRoll: studentRoll,
+          parentName: parentName,
+          message: `Call ${status}`,
+          timestamp: new Date().toISOString(),
+          status: status,
+          platform: 'Call',
+          duration: `${duration.toFixed(1)} seconds`
+        };
+        localStorageDatabase.saveMessage(log);
+        fetchMessagesFromServer();
+        document.body.removeChild(dialog);
+      }
 
-            document.getElementById('yesBtn').addEventListener('click', () => handleResponse(true));
-            document.getElementById('noBtn').addEventListener('click', () => handleResponse(false));
-        }, 10000); // Adjust delay as needed
-    } else {
-        alert('Parent phone number not available.');
-    }
+      document.getElementById('yesBtn').addEventListener('click', () => handleResponse(true));
+      document.getElementById('noBtn').addEventListener('click', () => handleResponse(false));
+    }, 10000); // Adjust delay as needed
+  } else {
+    alert('Parent phone number not available.');
+  }
 }
 function callStudent() {
   const studentPhone = document.getElementById('studentPhone').textContent;
@@ -322,92 +322,92 @@ function callStudent() {
     alert('Student phone number not available.');
   }
 }
-  // function showMessageForm() {
-  //   const messageForm = document.getElementById('messageForm');
-  //   messageForm.style.display = 'block';
-  //   messageForm.classList.add('fade-in');
-  // }
+// function showMessageForm() {
+//   const messageForm = document.getElementById('messageForm');
+//   messageForm.style.display = 'block';
+//   messageForm.classList.add('fade-in');
+// }
 
-  function saveMessage() {
-    const message = document.getElementById('messageContent').value;
+function saveMessage() {
+  const message = document.getElementById('messageContent').value;
 
-    if (message.trim() === '') {
-      alert('Please enter a message.');
-      return;
-    }
-
-    const log = {
-      sender: 'Mr.NVS Murthy',
-      recipient: document.getElementById('parentPhone').textContent,
-      message: message,
-      timestamp: new Date().toISOString(),
-      status: 'saved'
-    };
-
-    localStorageDatabase.saveMessage(log);
-fetchMessagesFromServer();
-
-    alert('Message saved successfully');
+  if (message.trim() === '') {
+    alert('Please enter a message.');
+    return;
   }
 
-  function sendMessage() {
-    const parentPhone = document.getElementById('parentPhone').textContent;
-    const message = document.getElementById('messageContent').value;
-
-    if (message.trim() === '') {
-      alert('Please enter a message.');
-      return;
-    }
-
-    // Open SMS app with pre-filled message for individual parent
-    window.location.href = `sms:${parentPhone}?body=${encodeURIComponent(message)}`;
-
-    const log = {
-      sender: 'Mr.NVS Murthy',
-      recipient: parentPhone,
-      message: message,
-      timestamp: new Date().toISOString(),
-      status: 'sent'
-    };
-    serverDatabase.saveMessage(log);
-    fetchMessagesFromServer();
-
-    document.getElementById('messageContent').value = '';
-    localStorageDatabase.saveMessage(log);
-    fetchMessagesFromServer();
-  }
-
-  function showBulkMessageForm() {
-const bulkMessageForm = document.getElementById('bulkMessageForm');
-document.getElementById('bulkMessageContent').value = ''; // Clear previous message
-bulkMessageForm.style.display = 'block';
-bulkMessageForm.classList.add('fade-in');
-}
-
-  function saveBulkMessage() {
-const message = document.getElementById('bulkMessageContent').value;
-
-if (message.trim() === '') {
-  alert('Please enter a message.');
-  return;
-}
-
-// Save a bulk message log for each student
-students.forEach(student => {
   const log = {
     sender: 'Mr.NVS Murthy',
-    recipient: student.parentPhone,
+    recipient: document.getElementById('parentPhone').textContent,
     message: message,
     timestamp: new Date().toISOString(),
-    status: 'saved (bulk)'
+    status: 'saved'
   };
+
   localStorageDatabase.saveMessage(log);
-});
+  fetchMessagesFromServer();
 
-fetchMessagesFromServer();
-updateMessageLogs();
+  alert('Message saved successfully');
+}
 
-alert('Bulk message saved successfully');
+function sendMessage() {
+  const parentPhone = document.getElementById('parentPhone').textContent;
+  const message = document.getElementById('messageContent').value;
+
+  if (message.trim() === '') {
+    alert('Please enter a message.');
+    return;
+  }
+
+  // Open SMS app with pre-filled message for individual parent
+  window.location.href = `sms:${parentPhone}?body=${encodeURIComponent(message)}`;
+
+  const log = {
+    sender: 'Mr.NVS Murthy',
+    recipient: parentPhone,
+    message: message,
+    timestamp: new Date().toISOString(),
+    status: 'sent'
+  };
+  serverDatabase.saveMessage(log);
+  fetchMessagesFromServer();
+
+  document.getElementById('messageContent').value = '';
+  localStorageDatabase.saveMessage(log);
+  fetchMessagesFromServer();
+}
+
+function showBulkMessageForm() {
+  const bulkMessageForm = document.getElementById('bulkMessageForm');
+  document.getElementById('bulkMessageContent').value = ''; // Clear previous message
+  bulkMessageForm.style.display = 'block';
+  bulkMessageForm.classList.add('fade-in');
+}
+
+function saveBulkMessage() {
+  const message = document.getElementById('bulkMessageContent').value;
+
+  if (message.trim() === '') {
+    alert('Please enter a message.');
+    return;
+  }
+
+  // Save a bulk message log for each student
+  students.forEach(student => {
+    const log = {
+      sender: 'Mr.NVS Murthy',
+      recipient: student.parentPhone,
+      message: message,
+      timestamp: new Date().toISOString(),
+      status: 'saved (bulk)'
+    };
+    localStorageDatabase.saveMessage(log);
+  });
+
+  fetchMessagesFromServer();
+  updateMessageLogs();
+
+  alert('Bulk message saved successfully');
 }
 
 function sendBulkMessage() {
@@ -454,7 +454,7 @@ function updateMessageLogs() {
   recentLogs.forEach(log => {
     const logEntry = document.createElement('p');
     const timestamp = new Date(log.timestamp);
-    const formattedDate = `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+    const formattedDate = `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     logEntry.textContent = `${formattedDate} - To: ${log.recipient} - Student: ${log.studentName || 'N/A'} (${log.studentRoll || 'N/A'}) - Parent: ${log.parentName || 'N/A'} - Status: ${log.status} - Platform: ${log.platform || 'SMS'} - Duration: ${log.duration || 'N/A'}`;
     logEntry.classList.add('fade-in');
     logsContainer.appendChild(logEntry);
@@ -471,50 +471,56 @@ function updateMessageLogs() {
 }
 
 function exportMessageLogs() {
-  const csvContent = "data:text/csv;charset=utf-8," 
-  + "Timestamp,Sender,Recipient,Student Name,Roll Number,Parent Name,Message,Status,Platform,Duration\n"
-  + messageLogs.map(e => {
-    const timestamp = new Date(e.timestamp);
-    const formattedTimestamp = `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: true})}`;
-    return `${formattedTimestamp},${e.sender},${e.recipient},${e.studentName || ''},${e.studentRoll || ''},${e.parentName || 'Not available'},${e.message},${e.status},${e.platform || 'SMS'},${e.duration || 'N/A'}`;
-  }).join("\n");
+  const csvContent = "data:text/csv;charset=utf-8,"
+    + "Timestamp,Sender,Recipient,Student Name,Roll Number,Parent Name,Message,Status,Platform,Duration\n"
+    + messageLogs.map(e => {
+      const timestamp = new Date(e.timestamp);
+      const formattedTimestamp = `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`;
+      return `${formattedTimestamp},${e.sender},${e.recipient},${e.studentName || ''},${e.studentRoll || ''},${e.parentName || 'Not available'},${e.message},${e.status},${e.platform || 'SMS'},${e.duration || 'N/A'}`;
+    }).join("\n");
 
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
   link.setAttribute("href", encodedUri);
-  link.setAttribute("download", "message_logs.csv");
+  
+  // Create a date string for the file name in day-month-year format
+  const now = new Date();
+  const dateString = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
+  
+  // Set the file name with the date
+  link.setAttribute("download", `Data-Sheet (${dateString}).csv`);
+  
   document.body.appendChild(link);
   link.click();
 }
-
-  // Initialize message logs
-  fetchMessagesFromServer();
-  function periodicCleanup() {
-const messages = localStorageDatabase.getAllMessages();
-localStorageDatabase.cleanupOldMessages(messages);
+// Initialize message logs
+fetchMessagesFromServer();
+function periodicCleanup() {
+  const messages = localStorageDatabase.getAllMessages();
+  localStorageDatabase.cleanupOldMessages(messages);
 }
 
 // Call this function every day
 setInterval(periodicCleanup, 24 * 60 * 60 * 1000);
-document.addEventListener('DOMContentLoaded', function() {
-fetchMessagesFromServer();
-periodicCleanup();
+document.addEventListener('DOMContentLoaded', function () {
+  fetchMessagesFromServer();
+  periodicCleanup();
 });
 function clearAllLogs() {
-if (confirm("Are you sure you want to clear all message logs? This action cannot be undone.")) {
-  localStorage.removeItem('messageLogs');
-  messageLogs = [];
-  updateMessageLogs();
-  alert("All message logs have been cleared.");
-}
+  if (confirm("Are you sure you want to clear all message logs? This action cannot be undone.")) {
+    localStorage.removeItem('messageLogs');
+    messageLogs = [];
+    updateMessageLogs();
+    alert("All message logs have been cleared.");
+  }
 }
 function clearAllLogs() {
-if (confirm("Are you sure you want to clear all message logs? This action cannot be undone.")) {
-  localStorageDatabase.clearAllLogs();
-  messageLogs = [];
-  updateMessageLogs();
-  alert("All message logs have been cleared.");
-}
+  if (confirm("Are you sure you want to clear all message logs? This action cannot be undone.")) {
+    localStorageDatabase.clearAllLogs();
+    messageLogs = [];
+    updateMessageLogs();
+    alert("All message logs have been cleared.");
+  }
 }
 function showCRProfiles() {
   const crProfiles = document.getElementById('crProfiles');
@@ -522,7 +528,7 @@ function showCRProfiles() {
 
   const crs = [
     { name: 'D.Akhil', rollNumber: '22WJ1A0468', email: '22WJ1A0468@gniindia.org', photo: 'https://i.ibb.co/6XNHkhv/image.png' },
-          { name: 'J.Harshitha', rollNumber: '22WJ1A04A9', email: '22WJ1A04A9@gniindia.org', photo: 'https://i.ibb.co/6XNHkhv/image.png' },
+    { name: 'J.Harshitha', rollNumber: '22WJ1A04A9', email: '22WJ1A04A9@gniindia.org', photo: 'https://i.ibb.co/6XNHkhv/image.png' },
   ];
 
   crs.forEach(cr => {
@@ -558,21 +564,21 @@ function whatsappCR(rollNumber) {
 }
 
 function callCR(rollNumber) {
-const cr = students.find(s => s.rollNumber === rollNumber);
-if (cr && cr.parentPhone) {
+  const cr = students.find(s => s.rollNumber === rollNumber);
+  if (cr && cr.parentPhone) {
     window.location.href = `tel:${cr.parentPhone}`;
-} else {
+  } else {
     alert('Phone number not available for this CR.');
-}
+  }
 }
 
 function messageCR(rollNumber) {
-const cr = students.find(s => s.rollNumber === rollNumber);
-if (cr && cr.parentPhone) {
+  const cr = students.find(s => s.rollNumber === rollNumber);
+  if (cr && cr.parentPhone) {
     window.location.href = `sms:${cr.parentPhone}`;
-} else {
+  } else {
     alert('Phone number not available for this CR.');
-}
+  }
 }
 function whatsappParent() {
   toggleCustomMessageArea('parent');
