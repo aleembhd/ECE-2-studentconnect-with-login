@@ -24,21 +24,29 @@
 
 .department-title {
   text-align: center; /* Center the text */
-  font-size: 22px; /* Adjust font size for desktop */
 }
 
-.highlight1 {
-  color: #FF5733; Choose a catchy color (e.g., a vibrant orange)
+.department {
+  font-size: 15px; /* Adjust font size for "Department Of" */
+  display: block; /* Ensure it starts on a new line */
+}
+
+.highlight1{
+  /* color: #FF5733; Choose a catchy color (e.g., a vibrant orange) */
+  font-size: 15px; /* Adjust font size for "ELECTRONICS AND COMMUNICATION" */
   white-space: nowrap; /* Prevents line breaks within the text */
 }
 
 /* Responsive Design */
 @media (max-width: 600px) {
-  .department-title {
-      font-size: 17px; /* Adjust font size for mobile */
+  .department {
+      font-size: 18px; /* Adjust font size for "Department Of" on mobile */
+  }
+  
+  .highlight {
+      font-size: 22px; /* Adjust font size for "ELECTRONICS AND COMMUNICATION" on mobile */
   }
 }
-
 .section-title {
   text-align: center; /* Center the text */
   font-size: 20px; /* Base font size for desktop */
