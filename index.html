@@ -9,6 +9,7 @@
     <!-- Add Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <style>
     body {
@@ -85,6 +86,28 @@ a:hover {
 #resetPasswordForm {
     display: none;
 }
+
+.password-container {
+    position: relative;
+    width: 100%;
+}
+
+.password-container input[type="password"],
+.password-container input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    padding-right: 35px; /* Make room for the icon */
+    box-sizing: border-box;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 1;
+}
 </style>
 <body>
     <div class="container">
@@ -96,13 +119,16 @@ a:hover {
             <div id="loginForm">
                 <h2>Login</h2>
                 <input type="email" id="loginEmail" placeholder="Email" required>
-                <input type="password" id="loginPassword" placeholder="Password" required>
+                <div class="password-container">
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                    <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility()"></i>
+                </div>
                 <div class="remember-me">
                     <input type="checkbox" id="rememberMe">
                     <label for="rememberMe">Remember Me</label>
                 </div>
                 <button onclick="login()">Login</button>
-                <p>Don't have an account? <a href="#" onclick="showRegister()">Register</a></p>
+                <!-- <p>Don't have an account? <a href="#" onclick="showRegister()">Register</a></p> -->
                 <p><a href="#" onclick="showResetPassword()">Forgot Password?</a></p>
             </div>
 
@@ -145,16 +171,21 @@ a:hover {
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Add this function to check and fill the remembered email
-        function checkRememberedEmail() {
+        // Modify the checkRememberedEmail function
+        function checkRememberedCredentials() {
             const rememberedEmail = localStorage.getItem('rememberedEmail');
+            const rememberedPassword = localStorage.getItem('rememberedPassword');
             if (rememberedEmail) {
                 document.getElementById('loginEmail').value = rememberedEmail;
+            }
+            if (rememberedPassword) {
+                document.getElementById('loginPassword').value = rememberedPassword;
+                document.getElementById('rememberMe').checked = true;
             }
         }
 
         // Call this function when the page loads
-        checkRememberedEmail();
+        checkRememberedCredentials();
 
         window.login = function() {
             const email = document.getElementById('loginEmail').value;
@@ -163,8 +194,10 @@ a:hover {
 
             if (rememberMe) {
                 localStorage.setItem('rememberedEmail', email);
+                localStorage.setItem('rememberedPassword', password);
             } else {
                 localStorage.removeItem('rememberedEmail');
+                localStorage.removeItem('rememberedPassword');
             }
 
             signInWithEmailAndPassword(auth, email, password)
@@ -180,6 +213,22 @@ a:hover {
                     console.error("Login error:", error.message);
                     alert("Login failed: " + error.message);
                 });
+        }
+
+        // Add this function for password visibility toggle
+        window.togglePasswordVisibility = function() {
+            const passwordInput = document.getElementById('loginPassword');
+            const toggleIcon = document.querySelector('.password-toggle');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
         }
 
         window.register = function() {
