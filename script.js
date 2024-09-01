@@ -381,7 +381,7 @@ function showPrintPreview() {
         </div>
         ${printContent}
         <div class="footer">
-          <p>© 2024 Croxton Technologies. All rights reserved.</p>
+          <p>© 2024 Croxton Technologies Hyderabad India. All rights reserved.</p>
         </div>
         <div class="no-print" style="text-align: center; margin-top: 20px;">
           <button onclick="window.print()" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; margin: 5px; cursor: pointer;">Print</button>
