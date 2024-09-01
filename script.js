@@ -385,7 +385,7 @@ function showPrintPreview() {
         </div>
         <div class="no-print" style="text-align: center; margin-top: 20px;">
           <button onclick="window.print()" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; margin: 5px; cursor: pointer;">Print</button>
-          <button onclick="savePDF()" style="background-color: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; margin: 5px; cursor: pointer;">Save as PDF</button>
+          <!--  <button onclick="savePDF()" style="background-color: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; margin: 5px; cursor: pointer;">Save as PDF</button> -->
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
         <script>
@@ -395,8 +395,9 @@ function showPrintPreview() {
               margin:       10,
               filename:     'Message_Logs_${startDate}_to_${endDate}.pdf',
               image:        { type: 'jpeg', quality: 0.98 },
-              html2canvas:  { scale: 2 },
-              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+              html2canvas:  { scale: 2, useCORS: true },
+              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' },
+              pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
             };
             html2pdf().from(element).set(opt).save();
           }
