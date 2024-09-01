@@ -43,8 +43,8 @@
       font-size: 18px; /* Adjust font size for "Department Of" on mobile */
   }
   
-  .highlight {
-      font-size: 22px; /* Adjust font size for "ELECTRONICS AND COMMUNICATION" on mobile */
+  .highlight1 {
+      font-size: 20px; /* Adjust font size for "ELECTRONICS AND COMMUNICATION" on mobile */
   }
 }
 .section-title {
@@ -551,38 +551,255 @@ font-size: 15px;
   margin-bottom: 10px;
 }
 
-@media (max-width: 768px) {
-  .profile-card {
-    flex-direction: column;
-  }
-
-  .profile-info {
-    margin-right: 0;
-    margin-bottom: 20px;
-  }
+.profile-card {
+  display: flex;
+  flex-direction: column; /* Stack profile info and button rows */
+  padding: 20px; /* Default padding */
 }
+
+.profile-info {
+  flex: 1; /* Allow profile info to take available space */
+  margin-bottom: 20px; /* Space below profile info */
+}
+
+/* Button Row Styles */
 .button-row {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  /* flex-wrap: wrap; Allows buttons to wrap to the next line if needed */
+  justify-content: space-between; /* Space out buttons */
+  align-items: center; /* Center buttons vertically */
+  gap: 10px; /* Default gap */
 }
 
-/* Media Query for Tablets */
+/* Media Query for Tablets and Small Devices */
 @media (max-width: 768px) {
   .button-row {
-    flex-direction: row; /* Stack buttons vertically */
-      align-items: stretch;
-      gap: 10px; /* Reduce gap for smaller screens */
+    flex-direction: row; /* Ensure buttons are in a row */
+    justify-content: space-between; /* Space out buttons */
+    align-items: stretch; /* Stretch buttons to full height */
   }
 }
 
 /* Media Query for Mobile Devices */
 @media (max-width: 480px) {
   .button-row {
-      flex-direction: row; /* Stack buttons vertically */
-      align-items: stretch; /* Stretch buttons to full width */
-      gap: 10px; /* Maintain a smaller gap */
+    flex-direction: row; /* Ensure buttons are in a row */
+    align-items: stretch; /* Stretch buttons to full width */
+    gap: 10px; /* Maintain a smaller gap */
+  }
+
+  .button-row button {
+    flex: 1; /* Allow buttons to take equal width */
+    min-width: 120px; /* Set a minimum width for buttons */
+  }
+}
+
+/* Additional Media Query for Very Small Screens */
+@media screen and (max-width: 400px) {
+  .button-row {
+    flex-direction: row; /* Ensure buttons remain in a row */
+  }
+
+  .button-row button {
+    width: 100%; /* Full width for buttons */
+    padding: 10px; /* Adjust padding */
+    font-size: 14px; /* Font size for smaller screens */
+  }
+}
+
+/* Styles for Desktop */
+@media (min-width: 769px) {
+  .button-row {
+    flex-direction: row; /* Ensure buttons are in a row */
+    justify-content: flex-start; /* Align buttons to the start */
+    gap: 20px; /* Increased gap for larger screens */
+  }
+
+  .button-row button {
+    padding: 10px 15px; /* Padding for desktop buttons */
+    font-size: 16px; /* Larger font size for desktop */
+    min-width: 150px; /* Minimum width for buttons on desktop */
+  }
+}
+.print-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.icon {
+  font-size: 1.2em;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+}
+
+.print-preview {
+  display: none;
+  position: fixed;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: white;
+  padding: 20px;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-preview, .print-preview * {
+    visibility: visible;
+  }
+  .print-preview {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+  /* Ensure the header and footer are visible when printing */
+  .print-preview h2,
+  .print-preview p {
+    visibility: visible !important;
+  }
+}
+
+/* Styles for the printable table */
+#printContent table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+#printContent th, #printContent td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+#printContent th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+#printContent tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Add or update these styles in your CSS file */
+.print-btn.fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  font-size: 24px;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+  z-index: 1000;
+}
+
+.print-btn.fab:hover {
+  background-color: #1967d2;
+  transform: scale(1.1);
+}
+
+.print-btn.fab .icon {
+  font-size: inherit;
+}
+
+/* Adjust for smaller screens */
+@media (max-width: 600px) {
+  .print-btn.fab {
+    bottom: 10px;
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+}
+
+.print-preview {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  z-index: 9999;
+  overflow: auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#printContent table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+
+#printContent th, #printContent td {
+  border: 1px solid #ddd;
+  padding: 4px;
+  text-align: left;
+}
+
+#printContent th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-preview, .print-preview * {
+    visibility: visible;
+  }
+  .print-preview {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    padding: 0;
+    margin: 0;
+  }
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
   }
 }
