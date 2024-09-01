@@ -466,14 +466,18 @@ function callParent() {
       popup.style.left = '50%';
       popup.style.top = '50%';
       popup.style.transform = 'translate(-50%, -50%)';
-      popup.style.backgroundColor = 'white';
-      popup.style.padding = '20px';
-      popup.style.border = '1px solid black';
+      popup.style.backgroundColor = '#ffffff';
+      popup.style.padding = '30px';
+      popup.style.borderRadius = '10px';
+      popup.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
       popup.style.zIndex = '1000';
+      popup.style.fontFamily = 'Arial, sans-serif';
+      popup.style.textAlign = 'center';
       popup.innerHTML = `
-        <p>Was the call answered?</p>
-        <button id="yesBtn">Yes</button>
-        <button id="noBtn">No</button>
+        <h3 style="margin-top: 0; color: #333;">Call Status</h3>
+        <p style="margin-bottom: 20px; color: #666;">Was the call answered?</p>
+        <button id="yesBtn" style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; margin: 0 10px; cursor: pointer; border-radius: 5px;">Yes</button>
+        <button id="noBtn" style="background-color: #f44336; color: white; border: none; padding: 10px 20px; margin: 0 10px; cursor: pointer; border-radius: 5px;">No</button>
       `;
       document.body.appendChild(popup);
 
