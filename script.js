@@ -94,20 +94,102 @@ const localStorageDatabase = {
     localStorage.removeItem('messageLogs');
   }
 };
-// Fetch messages from the server when the page loads
+
 document.addEventListener('DOMContentLoaded', function () {
   fetchMessagesFromServer();
   periodicCleanup();
-  setupToggleButtons();
+  setupEventListeners();
 });
 
-function toggleMessageForm() {
-  const messageForm = document.getElementById('messageForm');
-  if (messageForm.style.display === 'none') {
-    messageForm.style.display = 'block';
-    messageForm.classList.add('fade-in');
+function fetchMessagesFromServer() {
+  messageLogs = localStorageDatabase.getAllMessages();
+  updateMessageLogs();
+}
+
+function periodicCleanup() {
+  const messages = localStorageDatabase.getAllMessages();
+  localStorageDatabase.cleanupOldMessages(messages);
+}
+
+function setupEventListeners() {
+  const searchBtn = document.getElementById('searchBtn');
+  if (searchBtn) searchBtn.addEventListener('click', toggleSearch);
+
+  const whatsappParentBtn = document.getElementById('whatsappParentBtn');
+  if (whatsappParentBtn) {
+    whatsappParentBtn.addEventListener('click', toggleWhatsAppParent);
+  }
+
+  const sendCustomMessageBtn = document.getElementById('sendCustomMessageBtn');
+  if (sendCustomMessageBtn) {
+    sendCustomMessageBtn.addEventListener('click', sendCustomWhatsAppMessage);
+  }
+
+  const printBtn = document.getElementById('printBtn');
+  if (printBtn) printBtn.addEventListener('click', openPrintModal);
+
+  const closeModalBtn = document.getElementById('closeModal');
+  if (closeModalBtn) closeModalBtn.addEventListener('click', closePrintModal);
+
+  const printPreviewBtn = document.getElementById('printPreviewBtn');
+  if (printPreviewBtn) printPreviewBtn.addEventListener('click', showPrintPreview);
+
+  const clearLogsBtn = document.getElementById('clearLogsBtn');
+  if (clearLogsBtn) clearLogsBtn.addEventListener('click', clearAllLogs);
+
+  // Initialize date inputs with current date range
+  const today = new Date();
+  const oneMonthAgo = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+
+  const startDateInput = document.getElementById('startDate');
+  const endDateInput = document.getElementById('endDate');
+  if (startDateInput) startDateInput.value = oneMonthAgo.toISOString().split('T')[0];
+  if (endDateInput) endDateInput.value = today.toISOString().split('T')[0];
+
+  const exportLogsBtn = document.getElementById('exportLogsBtn');
+  if (exportLogsBtn) exportLogsBtn.addEventListener('click', exportMessageLogs);
+
+  const studentsBtn = document.getElementById('studentsBtn');
+  if (studentsBtn) studentsBtn.addEventListener('click', openStudentsPage);
+}
+
+function toggleSearch() {
+  const profileCard = document.getElementById('profileCard');
+  if (profileCard.style.display === 'none') {
+    searchStudent();
   } else {
-    messageForm.style.display = 'none';
+    profileCard.style.display = 'none';
+  }
+}
+
+function toggleWhatsAppParent() {
+  const customMessageArea = document.getElementById('customMessageArea');
+  if (customMessageArea.style.display === 'none' || customMessageArea.style.display === '') {
+    customMessageArea.style.display = 'block';
+  } else {
+    customMessageArea.style.display = 'none';
+  }
+}
+
+function searchStudent() {
+  const rollNumber = document.getElementById('rollNumber').value.toUpperCase();
+  const student = students.find(s => s.rollNumber.toUpperCase().endsWith(rollNumber));
+  const profileCard = document.getElementById('profileCard');
+
+  // Hide the profile card first
+  profileCard.style.display = 'none';
+
+  if (student) {
+    document.getElementById('studentName').textContent = student.name;
+    document.getElementById('studentRoll').textContent = student.rollNumber;
+    document.getElementById('parentName').textContent = student.parentName || 'Not available';
+    document.getElementById('parentPhone').textContent = student.parentPhone;
+    document.getElementById('studentPhone').textContent = student.studentPhone || 'Not available';
+
+    profileCard.style.display = 'block';
+    profileCard.classList.add('fade-in');
+  } else {
+    alert('Student not found. Please check the roll number and try again.');
   }
 }
 
@@ -133,395 +215,6 @@ function toggleCRProfiles() {
   }
 }
 
-
-function fetchMessagesFromServer() {
-  messageLogs = localStorageDatabase.getAllMessages();
-  updateMessageLogs();
-}
-
-// ... (keep all existing code above this point)
-
-document.getElementById('searchBtn').addEventListener('click', function () {
-  const rollNumber = document.getElementById('rollNumber').value.toUpperCase();
-  const student = students.find(s => s.rollNumber.toUpperCase().endsWith(rollNumber));
-  const profileCard = document.getElementById('profileCard');
-  const messageForm = document.getElementById('messageForm');
-  const bulkMessageForm = document.getElementById('bulkMessageForm');
-  const crProfiles = document.getElementById('crProfiles');
-
-  // Hide other elements
-  messageForm.style.display = 'none';
-  bulkMessageForm.style.display = 'none';
-  crProfiles.style.display = 'none';
-
-  // Toggle profile card visibility
-  if (profileCard.style.display === 'block') {
-    profileCard.style.display = 'none';
-    return; // Exit the function early if we're hiding the profile card
-  }
-
-  if (student) {
-    document.getElementById('studentName').textContent = student.name;
-    document.getElementById('studentRoll').textContent = student.rollNumber;
-    document.getElementById('studentEmail').textContent = student.email;
-    document.getElementById('parentName').textContent = student.parentName || 'Not available';
-    document.getElementById('parentPhone').textContent = student.parentPhone;
-
-    // Add student phone number to the profile card
-    document.getElementById('studentPhone').textContent = student.studentPhone || 'Not available';
-
-    profileCard.style.display = 'block';
-    profileCard.classList.add('fade-in');
-  } else {
-    alert('Student not found. Please check the roll number and try again.');
-    profileCard.style.display = 'none';
-  }
-});
-
-// Function to hide all open elements
-function hideAllElements() {
-  const elementsToHide = [
-    'profileCard', 'messageForm', 'bulkMessageForm', 'crProfiles'
-  ];
-  elementsToHide.forEach(id => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.style.display = 'none';
-    }
-  });
-}
-
-// Add click event listeners to other buttons to hide elements
-const buttonsToAddListener = [
-  'messageAllBtn', 'exportLogsBtn', 'clearLogsBtn'
-];
-
-buttonsToAddListener.forEach(id => {
-  const button = document.getElementById(id);
-  if (button) {
-    button.addEventListener('click', hideAllElements);
-  }
-});
-
-// ... (keep all existing code below this point)
-
-
-function callParent() {
-  const parentPhone = document.getElementById('parentPhone').textContent;
-  const studentName = document.getElementById('studentName').textContent;
-  const studentRoll = document.getElementById('studentRoll').textContent;
-  const parentName = document.getElementById('parentName').textContent || 'Not available';
-
-  if (parentPhone) {
-    const cleanedNumber = parentPhone.replace(/\D/g, '');
-    const telUri = `tel:${cleanedNumber}`;
-    const startTime = new Date();
-
-    // Initiate the call
-    window.location.href = telUri;
-
-    // Use a custom dialog after a delay
-    setTimeout(() => {
-      const endTime = new Date();
-      const duration = (endTime - startTime) / 1000; // duration in seconds
-
-      // Create a custom dialog
-      const dialog = document.createElement('div');
-      dialog.innerHTML = `
-                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
-                    <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
-                        <h2>Was the call answered?</h2>
-                        <button id="yesBtn" style="margin: 10px; padding: 10px 20px;">Yes</button>
-                        <button id="noBtn" style="margin: 10px; padding: 10px 20px;">No</button>
-                    </div>
-                </div>
-            `;
-      document.body.appendChild(dialog);
-
-      function handleResponse(wasAnswered) {
-        const status = wasAnswered ? 'Answered' : 'Unanswered';
-        const log = {
-          sender: 'Mr.NVS Murthy',
-          recipient: cleanedNumber,
-          studentName: studentName,
-          studentRoll: studentRoll,
-          parentName: parentName,
-          message: `Call ${status}`,
-          timestamp: new Date().toISOString(),
-          status: status,
-          platform: 'Call',
-          duration: `${duration.toFixed(1)} seconds`
-        };
-        localStorageDatabase.saveMessage(log);
-        fetchMessagesFromServer();
-        document.body.removeChild(dialog);
-      }
-
-      document.getElementById('yesBtn').addEventListener('click', () => handleResponse(true));
-      document.getElementById('noBtn').addEventListener('click', () => handleResponse(false));
-    }, 10000); // Adjust delay as needed
-  } else {
-    alert('Parent phone number not available.');
-  }
-}
-function callStudent() {
-  const studentPhone = document.getElementById('studentPhone').textContent;
-  const studentName = document.getElementById('studentName').textContent;
-  const studentRoll = document.getElementById('studentRoll').textContent;
-  const parentName = document.getElementById('parentName').textContent; // Add this line
-
-  if (studentPhone && studentPhone !== 'Not available') {
-    const cleanedNumber = studentPhone.replace(/\D/g, '');
-    const telUri = `tel:${cleanedNumber}`;
-    const startTime = new Date();
-
-    // Initiate the call
-    window.location.href = telUri;
-
-    // Use a custom dialog after a delay
-    setTimeout(() => {
-      const endTime = new Date();
-      const duration = (endTime - startTime) / 1000; // duration in seconds
-
-      // Create a custom dialog
-      const dialog = document.createElement('div');
-      dialog.innerHTML = `
-        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
-          <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
-            <h2>Was the call answered?</h2>
-            <button id="yesBtn" style="margin: 10px; padding: 10px 20px;">Yes</button>
-            <button id="noBtn" style="margin: 10px; padding: 10px 20px;">No</button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(dialog);
-
-      function handleResponse(wasAnswered) {
-        const status = wasAnswered ? 'Answered' : 'Unanswered';
-        const log = {
-          sender: 'Mr.NVS Murthy',
-          recipient: cleanedNumber,
-          studentName: studentName,
-          studentRoll: studentRoll,
-          parentName: parentName, // Add this line
-          message: `Student Call ${status}`,
-          timestamp: new Date().toISOString(),
-          status: status,
-          platform: 'Call',
-          duration: `${duration.toFixed(1)} seconds`
-        };
-        localStorageDatabase.saveMessage(log);
-        fetchMessagesFromServer();
-        document.body.removeChild(dialog);
-      }
-
-      document.getElementById('yesBtn').addEventListener('click', () => handleResponse(true));
-      document.getElementById('noBtn').addEventListener('click', () => handleResponse(false));
-    }, 10000); // Adjust delay as needed
-  } else {
-    alert('Student phone number not available.');
-  }
-}
-// function showMessageForm() {
-//   const messageForm = document.getElementById('messageForm');
-//   messageForm.style.display = 'block';
-//   messageForm.classList.add('fade-in');
-// }
-
-function saveMessage() {
-  const message = document.getElementById('messageContent').value;
-
-  if (message.trim() === '') {
-    alert('Please enter a message.');
-    return;
-  }
-
-  const log = {
-    sender: 'Mr.NVS Murthy',
-    recipient: document.getElementById('parentPhone').textContent,
-    message: message,
-    timestamp: new Date().toISOString(),
-    status: 'saved'
-  };
-
-  localStorageDatabase.saveMessage(log);
-  fetchMessagesFromServer();
-
-  alert('Message saved successfully');
-}
-
-function sendMessage() {
-  const parentPhone = document.getElementById('parentPhone').textContent;
-  const message = document.getElementById('messageContent').value;
-
-  if (message.trim() === '') {
-    alert('Please enter a message.');
-    return;
-  }
-
-  // Open SMS app with pre-filled message for individual parent
-  window.location.href = `sms:${parentPhone}?body=${encodeURIComponent(message)}`;
-
-  const log = {
-    sender: 'Mr.NVS Murthy',
-    recipient: parentPhone,
-    message: message,
-    timestamp: new Date().toISOString(),
-    status: 'sent'
-  };
-  serverDatabase.saveMessage(log);
-  fetchMessagesFromServer();
-
-  document.getElementById('messageContent').value = '';
-  localStorageDatabase.saveMessage(log);
-  fetchMessagesFromServer();
-}
-
-function showBulkMessageForm() {
-  const bulkMessageForm = document.getElementById('bulkMessageForm');
-  document.getElementById('bulkMessageContent').value = ''; // Clear previous message
-  bulkMessageForm.style.display = 'block';
-  bulkMessageForm.classList.add('fade-in');
-}
-
-function saveBulkMessage() {
-  const message = document.getElementById('bulkMessageContent').value;
-
-  if (message.trim() === '') {
-    alert('Please enter a message.');
-    return;
-  }
-
-  // Save a bulk message log for each student
-  students.forEach(student => {
-    const log = {
-      sender: 'Mr.NVS Murthy',
-      recipient: student.parentPhone,
-      message: message,
-      timestamp: new Date().toISOString(),
-      status: 'saved (bulk)'
-    };
-    localStorageDatabase.saveMessage(log);
-  });
-
-  fetchMessagesFromServer();
-  updateMessageLogs();
-
-  alert('Bulk message saved successfully');
-}
-
-function sendBulkMessage() {
-  const message = document.getElementById('bulkMessageContent').value;
-
-  if (message.trim() === '') {
-    alert('Please enter a message.');
-    return;
-  }
-
-  // Prepare bulk SMS
-  const phoneNumbers = students.map(student => student.parentPhone).join(',');
-
-  // Open SMS app with pre-filled message for bulk sending
-  window.location.href = `sms:${phoneNumbers}?body=${encodeURIComponent(message)}`;
-
-  // Simulating sending bulk SMS and storing logs
-  students.forEach(student => {
-    const log = {
-      sender: 'Mr.NVS Murthy',
-      recipient: student.parentPhone,
-      studentName: student.name,
-      studentRoll: student.rollNumber,
-      parentName: student.parentName || 'Not available',
-      message: message,
-      timestamp: new Date().toISOString(),
-      status: 'sent'
-    };
-    localStorageDatabase.saveMessage(log);
-  });
-  fetchMessagesFromServer();
-
-  document.getElementById('bulkMessageContent').value = '';
-  document.getElementById('bulkMessageForm').style.display = 'none';
-}
-
-function updateMessageLogs() {
-  const logsContainer = document.getElementById('messageLogs');
-  logsContainer.innerHTML = '';
-
-  // Only show the 5 most recent messages
-  const recentLogs = messageLogs.slice(-1).reverse();
-
-  recentLogs.forEach(log => {
-    const logEntry = document.createElement('p');
-    const timestamp = new Date(log.timestamp);
-    const formattedDate = `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-    logEntry.textContent = `${formattedDate} - To: ${log.recipient} - Student: ${log.studentName || 'N/A'} (${log.studentRoll || 'N/A'}) - Parent: ${log.parentName || 'N/A'} - Status: ${log.status} - Platform: ${log.platform || 'SMS'} - Duration: ${log.duration || 'N/A'}`;
-    logEntry.classList.add('fade-in');
-    logsContainer.appendChild(logEntry);
-  });
-
-  // Add a message indicating there are more logs if applicable
-  if (messageLogs.length > 1) {
-    const moreLogsMessage = document.createElement('p');
-    moreLogsMessage.textContent = `... and ${messageLogs.length - 1} more messages`;
-    moreLogsMessage.style.fontStyle = 'italic';
-    moreLogsMessage.style.color = '#666';
-    logsContainer.appendChild(moreLogsMessage);
-  }
-}
-
-function exportMessageLogs() {
-  const csvContent = "data:text/csv;charset=utf-8,"
-    + "Timestamp,Sender,Recipient,Student Name,Roll Number,Parent Name,Message,Status,Platform,Duration\n"
-    + messageLogs.map(e => {
-      const timestamp = new Date(e.timestamp);
-      const formattedTimestamp = `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`;
-      return `${formattedTimestamp},${e.sender},${e.recipient},${e.studentName || ''},${e.studentRoll || ''},${e.parentName || 'Not available'},${e.message},${e.status},${e.platform || 'SMS'},${e.duration || 'N/A'}`;
-    }).join("\n");
-
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  
-  // Create a date string for the file name in day-month-year format
-  const now = new Date();
-  const dateString = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
-  
-  // Set the file name with the date
-  link.setAttribute("download", `Data-Sheet (${dateString}).csv`);
-  
-  document.body.appendChild(link);
-  link.click();
-}
-// Initialize message logs
-fetchMessagesFromServer();
-function periodicCleanup() {
-  const messages = localStorageDatabase.getAllMessages();
-  localStorageDatabase.cleanupOldMessages(messages);
-}
-
-// Call this function every day
-setInterval(periodicCleanup, 24 * 60 * 60 * 1000);
-document.addEventListener('DOMContentLoaded', function () {
-  fetchMessagesFromServer();
-  periodicCleanup();
-});
-function clearAllLogs() {
-  if (confirm("Are you sure you want to clear all message logs? This action cannot be undone.")) {
-    localStorage.removeItem('messageLogs');
-    messageLogs = [];
-    updateMessageLogs();
-    alert("All message logs have been cleared.");
-  }
-}
-function clearAllLogs() {
-  if (confirm("Are you sure you want to clear all message logs? This action cannot be undone.")) {
-    localStorageDatabase.clearAllLogs();
-    messageLogs = [];
-    updateMessageLogs();
-    alert("All message logs have been cleared.");
-  }
-}
 function showCRProfiles() {
   const crProfiles = document.getElementById('crProfiles');
   crProfiles.innerHTML = ''; // Clear existing profiles
@@ -542,124 +235,511 @@ function showCRProfiles() {
         <button onclick="callCR('${cr.rollNumber}')">Call</button>
         <button onclick="whatsappCR('${cr.rollNumber}')">WhatsApp</button>
       </div>
-
     `;
     crProfiles.appendChild(profileCard);
   });
 }
 
+function openPrintModal() {
+  document.getElementById('printModal').style.display = 'block';
+}
+
+function closePrintModal() {
+  document.getElementById('printModal').style.display = 'none';
+}
+
+function filterData() {
+  const startDate = new Date(document.getElementById('startDate').value);
+  const endDate = new Date(document.getElementById('endDate').value);
+  endDate.setHours(23, 59, 59, 999); // Set to end of day
+
+  return messageLogs.filter(log => {
+    const logDate = new Date(log.timestamp);
+    return logDate >= startDate && logDate <= endDate;
+  });
+}
+
+function generatePrintableTable(data) {
+  let tableHtml = `
+    <div style="text-align: center; margin-bottom: 20px;">
+      <p>Message Logs Report</p>
+    </div>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Sender</th>
+          <th>Recipient</th>
+          <th>Student Name</th>
+          <th>Roll Number</th>
+          <th>Parent Name</th>
+          <th style="width: 25%;">Message</th>
+          <th>Status</th>
+          <th>Platform</th>
+          <th>Duration</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  let currentDate = '';
+  data.forEach(log => {
+    const date = new Date(log.timestamp);
+    const dateString = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const highlightClass = dateString !== currentDate ? 'highlight' : '';
+    currentDate = dateString;
+
+    tableHtml += `
+      <tr class="${highlightClass}">
+        <td>${dateString}</td>
+        <td>${log.sender}</td>
+        <td>${log.recipient}</td>
+        <td>${log.studentName || ''}</td>
+        <td>${log.studentRoll || ''}</td>
+        <td>${log.parentName || ''}</td>
+        <td style="width: 25%;">${log.message}</td>
+        <td>${log.status}</td>
+        <td>${log.platform || 'SMS'}</td>
+        <td>${log.duration || 'N/A'}</td>
+      </tr>
+    `;
+  });
+
+  tableHtml += `
+      </tbody>
+    </table>
+    <div style="text-align: center; margin-top: 20px;">
+      <!-- <p>© 2024 Croxton Technologies. All rights reserved.</p> -->
+    </div>
+  `;
+
+  return tableHtml;
+}
+
+function showPrintPreview() {
+  const filteredData = filterData();
+  const printContent = generatePrintableTable(filteredData);
+  const startDate = new Date(document.getElementById('startDate').value).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  const endDate = new Date(document.getElementById('endDate').value).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  // Open a new window for the print preview
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Message Logs ${startDate} to ${endDate}</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+          }
+          .header, .footer {
+            text-align: center;
+            margin-bottom: 20px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+          }
+          th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 12px;
+          }
+          th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+          }
+          .highlight {
+            background-color: #ffffd0;
+          }
+          td:nth-child(7) {
+            width: 25%;
+            word-break: break-word;
+          }
+          @media print {
+            @page {
+              size: A4 landscape;
+              margin: 10mm;
+            }
+            body {
+              padding: 0;
+            }
+            .no-print {
+              display: none;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+        
+          <p>Date Range: ${startDate} to ${endDate}</p>
+        </div>
+        ${printContent}
+        <div class="footer">
+          <p>© 2024 Croxton Technologies. All rights reserved.</p>
+        </div>
+        <div class="no-print" style="text-align: center; margin-top: 20px;">
+          <button onclick="window.print()" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; margin: 5px; cursor: pointer;">Print</button>
+          <button onclick="savePDF()" style="background-color: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; margin: 5px; cursor: pointer;">Save as PDF</button>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+        <script>
+          function savePDF() {
+            const element = document.body;
+            const opt = {
+              margin:       10,
+              filename:     'Message_Logs_${startDate}_to_${endDate}.pdf',
+              image:        { type: 'jpeg', quality: 0.98 },
+              html2canvas:  { scale: 2 },
+              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+            html2pdf().from(element).set(opt).save();
+          }
+          window.onload = function() {
+            // Automatically open print dialog when the page loads
+            window.print();
+          }
+        </script>
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+
+  // Hide the modal
+  document.getElementById('printModal').style.display = 'none';
+}
+
+function updateMessageLogs() {
+  const logsContainer = document.getElementById('messageLogs');
+  logsContainer.innerHTML = '';
+
+  // Only show the most recent message
+  if (messageLogs.length > 0) {
+    const mostRecentLog = messageLogs[messageLogs.length - 1];
+    const logEntry = document.createElement('p');
+    const timestamp = new Date(mostRecentLog.timestamp);
+    const formattedDate = `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    logEntry.textContent = `${formattedDate} - To: ${mostRecentLog.recipient} - Student: ${mostRecentLog.studentName || 'N/A'} (${mostRecentLog.studentRoll || 'N/A'}) - Parent: ${mostRecentLog.parentName || 'N/A'} - Status: ${mostRecentLog.status} - Platform: ${mostRecentLog.platform || 'SMS'} - Duration: ${mostRecentLog.duration || 'N/A'}`;
+    logEntry.classList.add('fade-in');
+    logsContainer.appendChild(logEntry);
+  }
+
+  // Add a message indicating there are more logs if applicable
+  if (messageLogs.length > 1) {
+    const moreLogsMessage = document.createElement('p');
+    moreLogsMessage.textContent = `... and ${messageLogs.length - 1} more messages`;
+    moreLogsMessage.style.fontStyle = 'italic';
+    moreLogsMessage.style.color = '#666';
+    logsContainer.appendChild(moreLogsMessage);
+  }
+}
+
+function clearAllLogs() {
+  if (confirm("Are you sure you want to clear all message logs? This action cannot be undone.")) {
+    localStorageDatabase.clearAllLogs();
+    messageLogs = [];
+    updateMessageLogs();
+    alert("All message logs have been cleared.");
+  }
+}
+
+function callParent() {
+  const parentPhone = document.getElementById('parentPhone').textContent;
+  const studentName = document.getElementById('studentName').textContent;
+  const studentRoll = document.getElementById('studentRoll').textContent;
+  const parentName = document.getElementById('parentName').textContent;
+  
+  if (parentPhone) {
+    const startTime = new Date();
+    window.location.href = `tel:${parentPhone}`;
+    
+    // Create and show popup after 10 seconds
+    setTimeout(() => {
+      const popup = document.createElement('div');
+      popup.style.position = 'fixed';
+      popup.style.left = '50%';
+      popup.style.top = '50%';
+      popup.style.transform = 'translate(-50%, -50%)';
+      popup.style.backgroundColor = 'white';
+      popup.style.padding = '20px';
+      popup.style.border = '1px solid black';
+      popup.style.zIndex = '1000';
+      popup.innerHTML = `
+        <p>Was the call answered?</p>
+        <button id="yesBtn">Yes</button>
+        <button id="noBtn">No</button>
+      `;
+      document.body.appendChild(popup);
+
+      document.getElementById('yesBtn').addEventListener('click', () => handleCallResponse(true));
+      document.getElementById('noBtn').addEventListener('click', () => handleCallResponse(false));
+
+      function handleCallResponse(wasAnswered) {
+        const endTime = new Date();
+        const duration = Math.round((endTime - startTime) / 1000); // Duration in seconds
+        
+        // Log the call
+        const log = {
+          sender: 'NVS Murthy',
+          recipient: parentPhone,
+          studentName: studentName,
+          studentRoll: studentRoll,
+          parentName: parentName,
+          message: `Phone call to parent - ${wasAnswered ? 'Answered' : 'Not Answered'}`,
+          timestamp: new Date().toISOString(),
+          status: wasAnswered ? 'answered' : 'not answered',
+          platform: 'Phone',
+          duration: `${duration} seconds`
+        };
+        localStorageDatabase.saveMessage(log);
+        fetchMessagesFromServer();
+        document.body.removeChild(popup);
+      }
+    }, 10000);
+  } else {
+    alert('Parent phone number not available.');
+  }
+}
+
+function callStudent() {
+  const studentPhone = document.getElementById('studentPhone').textContent;
+  
+  if (studentPhone && studentPhone !== 'Not available') {
+    window.location.href = `tel:${studentPhone}`;
+  } else {
+    alert('Student phone number not available.');
+  }
+}
+
+function whatsappParent() {
+  const customMessageArea = document.getElementById('customMessageArea');
+  customMessageArea.style.display = 'block';
+  const sendCustomMessageBtn = document.getElementById('sendCustomMessageBtn');
+  sendCustomMessageBtn.onclick = sendCustomWhatsAppMessage;
+}
+
+function whatsappStudent() {
+  const studentPhone = document.getElementById('studentPhone').textContent;
+  const studentName = document.getElementById('studentName').textContent;
+  const studentRoll = document.getElementById('studentRoll').textContent;
+  const parentName = document.getElementById('parentName').textContent;
+  
+  if (studentPhone && studentPhone !== 'Not available') {
+    const message = encodeURIComponent('Hello, this is a message from your faculty.');
+    window.open(`https://wa.me/${studentPhone}?text=${message}`, '_blank');
+    
+    // Log the WhatsApp message
+    const log = {
+      sender: 'NVS Murthy',
+      recipient: studentPhone,
+      studentName: studentName,
+      studentRoll: studentRoll,
+      parentName: parentName,
+      message: 'WhatsApp message sent to student',
+      timestamp: new Date().toISOString(),
+      status: 'sent',
+      platform: 'WhatsApp'
+    };
+    localStorageDatabase.saveMessage(log);
+    fetchMessagesFromServer();
+  } else {
+    alert('Student phone number not available.');
+  }
+}
+
+function sendCustomWhatsAppMessage() {
+  const parentPhone = document.getElementById('parentPhone').textContent;
+  const studentName = document.getElementById('studentName').textContent;
+  const studentRoll = document.getElementById('studentRoll').textContent;
+  const parentName = document.getElementById('parentName').textContent;
+  const customMessage = document.getElementById('customMessageContent').value;
+  
+  if (parentPhone && customMessage.trim() !== '') {
+    const message = encodeURIComponent(customMessage);
+    window.open(`https://wa.me/${parentPhone}?text=${message}`, '_blank');
+    
+    // Log the custom WhatsApp message
+    const log = {
+      sender: 'NVS Murthy',
+      recipient: parentPhone,
+      studentName: studentName,
+      studentRoll: studentRoll,
+      parentName: parentName,
+      message: customMessage,
+      timestamp: new Date().toISOString(),
+      status: 'sent',
+      platform: 'WhatsApp'
+    };
+    localStorageDatabase.saveMessage(log);
+    fetchMessagesFromServer();
+    
+    // Clear and hide the custom message area
+    document.getElementById('customMessageContent').value = '';
+    document.getElementById('customMessageArea').style.display = 'none';
+  } else {
+    alert('Please enter a message and ensure parent phone number is available.');
+  }
+}
+
+function exportMessageLogs() {
+  const today = new Date();
+  const dateString = today.toISOString().split('T')[0];
+  const csvContent = "data:text/csv;charset=utf-8,"
+    + "Timestamp,Sender,Recipient,Student Name,Roll Number,Parent Name,Message,Status,Platform,Duration\n"
+    + messageLogs.map(e => {
+      return `${e.timestamp},${e.sender},${e.recipient},${e.studentName || ''},${e.studentRoll || ''},${e.parentName || ''},${e.message},${e.status},${e.platform || 'SMS'},${e.duration || 'N/A'}`;
+    }).join("\n");
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `message_logs_${dateString}.csv`);
+  document.body.appendChild(link);
+  link.click();
+}
+
+function callCR(rollNumber) {
+  const cr = students.find(s => s.rollNumber === rollNumber);
+  if (cr && cr.studentPhone) {
+    window.location.href = `tel:${cr.studentPhone}`;
+  } else {
+    alert('Phone number not available for this CR.');
+  }
+}
+
 function whatsappCR(rollNumber) {
   const cr = students.find(s => s.rollNumber === rollNumber);
   if (cr && cr.studentPhone) {
-    let phoneNumber = cr.studentPhone.replace(/\D/g, '');
-    if (phoneNumber.startsWith('91') && phoneNumber.length > 10) {
-      phoneNumber = phoneNumber.slice(2);
-    }
-    phoneNumber = '91' + phoneNumber;
     const message = encodeURIComponent('Hello CR, this is a message from your faculty.');
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+    window.open(`https://wa.me/${cr.studentPhone}?text=${message}`, '_blank');
   } else {
     alert('WhatsApp number not available for this CR.');
   }
 }
 
-function callCR(rollNumber) {
-  const cr = students.find(s => s.rollNumber === rollNumber);
-  if (cr && cr.parentPhone) {
-    window.location.href = `tel:${cr.parentPhone}`;
-  } else {
-    alert('Phone number not available for this CR.');
-  }
+function openStudentsPage() {
+  window.open('students.html', '_blank');
 }
 
-function messageCR(rollNumber) {
-  const cr = students.find(s => s.rollNumber === rollNumber);
-  if (cr && cr.parentPhone) {
-    window.location.href = `sms:${cr.parentPhone}`;
-  } else {
-    alert('Phone number not available for this CR.');
-  }
-}
-function whatsappParent() {
-  toggleCustomMessageArea('parent');
+function sendBulkWhatsAppMessage(parentPhones, message) {
+  const encodedMessage = encodeURIComponent(message);
+  const whatsappUrl = `https://wa.me/?text=${encodedMessage}&phone=${parentPhones.join(',')}`;
+  window.open(whatsappUrl, '_blank');
 }
 
-function whatsappStudent() {
-  toggleCustomMessageArea('student');
+function sendBulkSMSMessage(parentPhones, message) {
+  const smsUrl = `sms:?body=${encodeURIComponent(message)}&phone=${parentPhones.join(',')}`;
+  window.location.href = smsUrl;
 }
-function toggleCustomMessageArea(recipient) {
-  const customMessageArea = document.getElementById('customMessageArea');
-  const sendBtn = document.getElementById('sendCustomMessageBtn');
-  const customMessageContent = document.getElementById('customMessageContent');
 
-  if (customMessageArea.style.display === 'none') {
-    customMessageArea.style.display = 'block';
-    sendBtn.onclick = () => sendCustomWhatsAppMessage(recipient);
-    updatePlaceholder(recipient);
-  } else {
-    customMessageArea.style.display = 'none';
-  }
-}
-function updatePlaceholder(recipient) {
-  const customMessageContent = document.getElementById('customMessageContent');
-  const studentName = document.getElementById('studentName').textContent;
-
-  if (recipient === 'parent') {
-    customMessageContent.placeholder = "Enter your message for parent";
-  } else if (recipient === 'student') {
-    customMessageContent.placeholder = `Enter your message for ${studentName}`;
-  }
-}
-function sendCustomWhatsAppMessage(recipient) {
-  const customMessage = document.getElementById('customMessageContent').value;
-  if (customMessage.trim() === '') {
+function sendBulkMessage(half) {
+  const bulkMessageContent = document.getElementById('bulkMessageContent').value;
+  if (bulkMessageContent.trim() === '') {
     alert('Please enter a message.');
     return;
   }
 
-  const studentName = document.getElementById('studentName').textContent;
-  const studentRoll = document.getElementById('studentRoll').textContent;
-  const parentName = document.getElementById('parentName').textContent;
+  const parentPhones = students.map(s => s.parentPhone);
+  const halfSize = Math.ceil(parentPhones.length / 3);
+  let phonesForHalf;
 
-  let phoneNumber;
-  if (recipient === 'parent') {
-    phoneNumber = document.getElementById('parentPhone').textContent;
-  } else {
-    const student = students.find(s => s.rollNumber === studentRoll);
-    phoneNumber = student ? student.studentPhone : '';
+  if (half === 'first') {
+    phonesForHalf = parentPhones.slice(0, halfSize);
+  } else if (half === 'second') {
+    phonesForHalf = parentPhones.slice(halfSize, halfSize * 2);
+  } else if (half === 'third') {
+    phonesForHalf = parentPhones.slice(halfSize * 2);
   }
 
-  if (!phoneNumber) {
-    alert(`${recipient.charAt(0).toUpperCase() + recipient.slice(1)} WhatsApp number not available.`);
+  const whatsappBtn = document.getElementById('whatsappBtn');
+  const smsBtn = document.getElementById('smsBtn');
+
+  if (whatsappBtn.checked) {
+    sendBulkWhatsAppMessage(phonesForHalf, bulkMessageContent);
+  } else if (smsBtn.checked) {
+    sendBulkSMSMessage(phonesForHalf, bulkMessageContent);
+  } else {
+    alert('Please select a platform (WhatsApp or SMS).');
+  }
+
+  // Log the bulk message
+  phonesForHalf.forEach(phone => {
+    const student = students.find(s => s.parentPhone === phone);
+    const log = {
+      sender: 'NVS Murthy',
+      recipient: phone,
+      studentName: student.name,
+      studentRoll: student.rollNumber,
+      parentName: student.parentName,
+      message: bulkMessageContent,
+      timestamp: new Date().toISOString(),
+      status: 'sent',
+      platform: whatsappBtn.checked ? 'WhatsApp' : 'SMS'
+    };
+    localStorageDatabase.saveMessage(log);
+  });
+  fetchMessagesFromServer();
+
+  // Clear and hide the bulk message area
+  document.getElementById('bulkMessageContent').value = '';
+  document.getElementById('bulkMessageForm').style.display = 'none';
+}
+
+function sendBulkMessage(group) {
+  const message = document.getElementById('bulkMessageContent').value;
+  if (message.trim() === '') {
+    alert('Please enter a message.');
     return;
   }
 
-  phoneNumber = phoneNumber.replace(/\D/g, '');
-  if (phoneNumber.startsWith('91') && phoneNumber.length > 10) {
-    phoneNumber = phoneNumber.slice(2);
+  let parentPhones = students.map(student => student.parentPhone);
+  let startIndex, endIndex;
+
+  switch (group) {
+    case 'first':
+      startIndex = 0;
+      endIndex = 25;
+      break;
+    case 'second':
+      startIndex = 25;
+      endIndex = 50;
+      break;
+    case 'third':
+      startIndex = 50;
+      endIndex = parentPhones.length;
+      break;
   }
-  phoneNumber = '91' + phoneNumber;
 
-  const encodedMessage = encodeURIComponent(customMessage);
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-  window.open(whatsappUrl, '_blank');
+  parentPhones = parentPhones.slice(startIndex, endIndex);
+  const phoneNumbers = parentPhones.join(',');
 
-  // Log the message
-  const log = {
-    sender: 'Mr.NVS Murthy',
-    recipient: phoneNumber,
-    studentName: studentName,
-    studentRoll: studentRoll,
-    parentName: parentName,
-    message: customMessage,
-    timestamp: new Date().toISOString(),
-    status: 'sent',
-    platform: 'WhatsApp'
-  };
-  localStorageDatabase.saveMessage(log);
+  // Open SMS app with pre-filled message for bulk sending
+  window.location.href = `sms:${phoneNumbers}?body=${encodeURIComponent(message)}`;
+
+  // Log the bulk message
+  parentPhones.forEach(phone => {
+    const student = students.find(s => s.parentPhone === phone);
+    const log = {
+      sender: 'NVS Murthy',
+      recipient: phone,
+      studentName: student ? student.name : 'N/A',
+      studentRoll: student ? student.rollNumber : 'N/A',
+      parentName: student ? student.parentName : 'N/A',
+      message: message,
+      timestamp: new Date().toISOString(),
+      status: 'sent',
+      platform: 'SMS'
+    };
+    localStorageDatabase.saveMessage(log);
+  });
+
   fetchMessagesFromServer();
-
-  // Clear and hide the custom message area
-  document.getElementById('customMessageContent').value = '';
-  document.getElementById('customMessageArea').style.display = 'none';
 }
+
+// Add this function to add sample data (for testing purposes)
+// document.addEventListener('DOMContentLoaded', addSampleData);
