@@ -21,7 +21,7 @@ const students = [
   { rollNumber: '22WJ1A0483', name: 'G UDAY KIRAN', parentPhone: '9989357805', parentName: 'G ASHOK KUMAR', studentPhone: '9640327805' },
   { rollNumber: '22WJ1A0484', name: 'GADDAM NARESH', parentPhone: '9618249816', parentName: 'GADDAM VENKATESHWARLU', studentPhone: '7981433822' },
   { rollNumber: '22WJ1A0485', name: 'GADE SHIVAJI', parentPhone: '9533472796', parentName: 'GADE NARSINGA RAO', studentPhone: '6301247924' },
-  { rollNumber: '22WJ1A0486', name: 'GAJBEERKAR SRAVAN KUMAR', parentPhone: '7702763794', parentName: 'GAJBEERKAR HUSSAIN', studentPhone: '7993556024' },
+  { rollNumber: '22WJ1A0486', name: 'GAJBEERKAR SRAVAN KUMAR', parentPhone: '7658919241', parentName: 'GAJBEERKAR HUSSAIN', studentPhone: '7993556024' },
   { rollNumber: '22WJ1A0487', name: 'GAJJALA VENKATESH', parentPhone: '9908994896', parentName: 'GAJJALA HARIBABU', studentPhone: '9676248621' },
   { rollNumber: '22WJ1A0488', name: 'GAMINI NAGAKRISHNA BHANU PRAKASH RAO', parentPhone: '9441341984', parentName: 'GAMINI VENKATRATHNAM', studentPhone: '9121008262' },
   { rollNumber: '22WJ1A0489', name: 'GANAPURAM SRAVANTHI', parentPhone: '9849207405', parentName: 'GANAPURAM KRISHNAIAH', studentPhone: '9182244302' },
@@ -70,6 +70,7 @@ const students = [
   { rollNumber: '23WJ5A0415', name: 'MD SALMAN', parentPhone: '8106150473', parentName: 'MD Khaja', studentPhone: '9652047325' },
   { rollNumber: '21WJ1A04K1', name: 'M. ADNAN', parentPhone: '9642337786', parentName: 'Nayeem hussain', studentPhone: '8008065856' },
 ];
+
 
 let messageLogs = [];
 
@@ -151,6 +152,10 @@ function setupEventListeners() {
 
   const studentsBtn = document.getElementById('studentsBtn');
   if (studentsBtn) studentsBtn.addEventListener('click', openStudentsPage);
+
+  // Add event listener for the new print button
+  const newPrintBtn = document.getElementById('newPrintBtn');
+  if (newPrintBtn) newPrintBtn.addEventListener('click', openPrintModal);
 }
 
 function toggleSearch() {
@@ -478,7 +483,7 @@ function callParent() {
         <p style="margin-bottom: 20px; color: #666;">Was the call answered?</p>
         <button id="yesBtn" style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; margin: 0 10px; cursor: pointer; border-radius: 5px;">Yes</button>
         <button id="noBtn" style="background-color: #f44336; color: white; border: none; padding: 10px 20px; margin: 0 10px; cursor: pointer; border-radius: 5px;">No</button>
-      `;
+      `; 
       document.body.appendChild(popup);
 
       document.getElementById('yesBtn').addEventListener('click', () => handleCallResponse(true));
