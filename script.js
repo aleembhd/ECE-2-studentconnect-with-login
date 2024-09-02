@@ -21,7 +21,7 @@ const students = [
   { rollNumber: '22WJ1A0483', name: 'G UDAY KIRAN', parentPhone: '9989357805', parentName: 'G ASHOK KUMAR', studentPhone: '9640327805' },
   { rollNumber: '22WJ1A0484', name: 'GADDAM NARESH', parentPhone: '9618249816', parentName: 'GADDAM VENKATESHWARLU', studentPhone: '7981433822' },
   { rollNumber: '22WJ1A0485', name: 'GADE SHIVAJI', parentPhone: '9533472796', parentName: 'GADE NARSINGA RAO', studentPhone: '6301247924' },
-  { rollNumber: '22WJ1A0486', name: 'GAJBEERKAR SRAVAN KUMAR', parentPhone: '7658919241', parentName: 'GAJBEERKAR HUSSAIN', studentPhone: '7993556024' },
+  { rollNumber: '22WJ1A0486', name: 'GAJBEERKAR SRAVAN KUMAR', parentPhone: '6309635024', parentName: 'GAJBEERKAR HUSSAIN', studentPhone: '7993556024' },
   { rollNumber: '22WJ1A0487', name: 'GAJJALA VENKATESH', parentPhone: '9908994896', parentName: 'GAJJALA HARIBABU', studentPhone: '9676248621' },
   { rollNumber: '22WJ1A0488', name: 'GAMINI NAGAKRISHNA BHANU PRAKASH RAO', parentPhone: '9441341984', parentName: 'GAMINI VENKATRATHNAM', studentPhone: '9121008262' },
   { rollNumber: '22WJ1A0489', name: 'GANAPURAM SRAVANTHI', parentPhone: '9849207405', parentName: 'GANAPURAM KRISHNAIAH', studentPhone: '9182244302' },
