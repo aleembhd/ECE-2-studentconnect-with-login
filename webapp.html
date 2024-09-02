@@ -69,7 +69,7 @@
 
         <div class="button-container">
             <button class="allparents" onclick="toggleBulkMessageForm()">All Parents</button>
-            <button class="excelsheet" onclick="exportMessageLogs()">Excel Sheet</button>
+            <button class="print-btn" onclick="openPrintModal()" style="font-weight: bold;">Print</button>
         </div>
         
         <button class="crsbtn" onclick="toggleCRProfiles()" class="full-width">Contact CRs</button>
@@ -100,9 +100,15 @@
             <button id="logoutBtn" class="logout-btn" onclick="logout()">Logout</button>
         </div>
         <!-- Update this button near your other buttons -->
-        <button id="printBtn" class="print-btn fab">
+
+        <!-- this + button is just  commented 
+        it functionality is ready to use this button just uncomment it and use
+        -->
+        <!-- -------------------(+ button)---------------------------------- -->
+
+        <!-- <button id="printBtn" class="print-btn fab">
           <span class="icon">+</span>
-        </button>
+        </button> -->
 
         <!-- Add this modal for date selection and print options -->
         <div id="printModal" class="modal">
