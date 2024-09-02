@@ -504,7 +504,7 @@ function callParent() {
           timestamp: new Date().toISOString(),
           status: wasAnswered ? 'answered' : 'not answered',
           platform: 'Phone',
-          duration: `${duration} seconds`
+          duration: wasAnswered ? `${duration} seconds` : 'N/A'
         };
         localStorageDatabase.saveMessage(log);
         fetchMessagesFromServer();
