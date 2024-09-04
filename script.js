@@ -1,6 +1,5 @@
 const students = [
-
-  { rollNumber: '22WJ1A0465', name: 'DASARI JOSEPH DAVID PAUL', parentPhone: '9866775630', parentName: 'DASARI PRASADA RAO', studentPhone: '8985002400' },
+   { rollNumber: '22WJ1A0465', name: 'DASARI JOSEPH DAVID PAUL', parentPhone: '9866775630', parentName: 'DASARI PRASADA RAO', studentPhone: '8985002400' },
   { rollNumber: '22WJ1A0466', name: 'DEVIREDDY POOJITHA', parentPhone: '9908877647', parentName: 'DEVIREDDY RAGHAVA REDDY', studentPhone: '9908877647' },
   { rollNumber: '22WJ1A0467', name: 'DHARAVATH NAVEEN', parentPhone: '9652727976', parentName: 'DHARAVATH SHIVA', studentPhone: '9505079769' },
   { rollNumber: '22WJ1A0468', name: 'DODDA AKHIL', parentPhone: '9502657588', parentName: 'DODDA RAMESH', studentPhone: '7671821182' },
@@ -69,31 +68,62 @@ const students = [
   { rollNumber: '23WJ5A0414', name: 'MAHADEVUNI NAVYA', parentPhone: '9948128561', parentName: '', studentPhone: '9704484691' },
   { rollNumber: '23WJ5A0415', name: 'MD SALMAN', parentPhone: '8106150473', parentName: 'MD Khaja', studentPhone: '9652047325' },
   { rollNumber: '21WJ1A04K1', name: 'M. ADNAN', parentPhone: '9642337786', parentName: 'Nayeem hussain', studentPhone: '8008065856' },
+  // ... [rest of the students remain unchanged]
 ];
 
 
 let messageLogs = [];
 
-const sectionNamespace = 'section2'; // Change this for each section, e.g., 'section2'
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBRp7Gv6rw32zakHZZFQ-zxm-ndKL49sh8",
+  authDomain: "studentconnect-6f32b.firebaseapp.com",
+  databaseURL: "https://studentconnect-6f32b-default-rtdb.firebaseio.com",
+  projectId: "studentconnect-6f32b",
+  storageBucket: "studentconnect-6f32b.appspot.com",
+  messagingSenderId: "520897019550",
+  appId: "1:520897019550:web:fb7365a6ca17d30913858f"
+};
 
-const localStorageDatabase = {
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+// Get a reference to the database service
+const database = firebase.database();
+
+// Replace localStorageDatabase with firebaseDatabase
+const firebaseDatabase = {
   saveMessage: function (log) {
-    let messages = JSON.parse(localStorage.getItem(`${sectionNamespace}_messageLogs`)) || [];
-    messages.push(log);
-    this.cleanupOldMessages(messages);
-    localStorage.setItem(`${sectionNamespace}_messageLogs`, JSON.stringify(messages));
+    return database.ref('messageLogs').push(log);
   },
   getAllMessages: function () {
-    return JSON.parse(localStorage.getItem(`${sectionNamespace}_messageLogs`)) || [];
+    return database.ref('messageLogs').once('value')
+      .then(snapshot => {
+        const messages = [];
+        snapshot.forEach(childSnapshot => {
+          messages.push(childSnapshot.val());
+        });
+        return messages;
+      });
   },
-  cleanupOldMessages: function (messages) {
+  cleanupOldMessages: function () {
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-    const filteredMessages = messages.filter(log => new Date(log.timestamp) > oneMonthAgo);
-    localStorage.setItem(`${sectionNamespace}_messageLogs`, JSON.stringify(filteredMessages));
+    
+    return database.ref('messageLogs').once('value')
+      .then(snapshot => {
+        const updates = {};
+        snapshot.forEach(childSnapshot => {
+          const message = childSnapshot.val();
+          if (new Date(message.timestamp) <= oneMonthAgo) {
+            updates[childSnapshot.key] = null;
+          }
+        });
+        return database.ref('messageLogs').update(updates);
+      });
   },
   clearAllLogs: function () {
-    localStorage.removeItem(`${sectionNamespace}_messageLogs`);
+    return database.ref('messageLogs').remove();
   }
 };
 
@@ -104,13 +134,18 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function fetchMessagesFromServer() {
-  messageLogs = localStorageDatabase.getAllMessages();
-  updateMessageLogs();
+  firebaseDatabase.getAllMessages()
+    .then(messages => {
+      messageLogs = messages;
+      updateMessageLogs();
+    })
+    .catch(error => console.error('Error fetching messages:', error));
 }
 
 function periodicCleanup() {
-  const messages = localStorageDatabase.getAllMessages();
-  localStorageDatabase.cleanupOldMessages(messages);
+  firebaseDatabase.cleanupOldMessages()
+    .then(() => console.log('Old messages cleaned up'))
+    .catch(error => console.error('Error cleaning up messages:', error));
 }
 
 function setupEventListeners() {
@@ -157,6 +192,9 @@ function setupEventListeners() {
   // Add event listener for the new print button
   const newPrintBtn = document.getElementById('newPrintBtn');
   if (newPrintBtn) newPrintBtn.addEventListener('click', openPrintModal);
+
+  const allParentsBtn = document.getElementById('allParentsBtn');
+  if (allParentsBtn) allParentsBtn.addEventListener('click', toggleBulkMessageForm);
 }
 
 function toggleSearch() {
@@ -201,7 +239,7 @@ function searchStudent() {
 
 function toggleBulkMessageForm() {
   const bulkMessageForm = document.getElementById('bulkMessageForm');
-  if (bulkMessageForm.style.display === 'none') {
+  if (bulkMessageForm.style.display === 'none' || bulkMessageForm.style.display === '') {
     bulkMessageForm.style.display = 'block';
     bulkMessageForm.classList.add('fade-in');
     document.getElementById('bulkMessageContent').value = ''; // Clear previous message
@@ -226,7 +264,7 @@ function showCRProfiles() {
   crProfiles.innerHTML = ''; // Clear existing profiles
 
   const crs = [
-    { name: 'D.Akhil', rollNumber: '22WJ1A0468', email: '22WJ1A0468@gniindia.org', photo: 'https://i.ibb.co/6XNHkhv/image.png' },
+   { name: 'D.Akhil', rollNumber: '22WJ1A0468', email: '22WJ1A0468@gniindia.org', photo: 'https://i.ibb.co/6XNHkhv/image.png' },
     { name: 'J.Harshitha', rollNumber: '22WJ1A04A9', email: '22WJ1A04A9@gniindia.org', photo: 'https://i.ibb.co/6XNHkhv/image.png' },
   ];
 
@@ -448,10 +486,16 @@ function updateMessageLogs() {
 
 function clearAllLogs() {
   if (confirm("Are you sure you want to clear all message logs? This action cannot be undone.")) {
-    localStorageDatabase.clearAllLogs();
-    messageLogs = [];
-    updateMessageLogs();
-    alert("All message logs have been cleared.");
+    firebaseDatabase.clearAllLogs()
+      .then(() => {
+        messageLogs = [];
+        updateMessageLogs();
+        alert("All message logs have been cleared.");
+      })
+      .catch(error => {
+        console.error('Error clearing logs:', error);
+        alert("An error occurred while clearing logs. Please try again.");
+      });
   }
 }
 
@@ -507,8 +551,9 @@ function callParent() {
           platform: 'Phone',
           duration: wasAnswered ? `${duration} seconds` : 'N/A'
         };
-        localStorageDatabase.saveMessage(log);
-        fetchMessagesFromServer();
+        firebaseDatabase.saveMessage(log)
+          .then(() => fetchMessagesFromServer())
+          .catch(error => console.error('Error saving message:', error));
         document.body.removeChild(popup);
       }
     }, 10000);
@@ -541,8 +586,7 @@ function whatsappStudent() {
   const parentName = document.getElementById('parentName').textContent;
   
   if (studentPhone && studentPhone !== 'Not available') {
-    // Add the "+91" country code to the phone number
-    const formattedPhone = "+91" + studentPhone.replace(/\D/g, '');
+    const formattedPhone = `+91${studentPhone.replace(/\D/g, '')}`;
     const message = encodeURIComponent('Hello, this is a message from your faculty.');
     window.open(`https://wa.me/${formattedPhone}?text=${message}`, '_blank');
     
@@ -558,8 +602,9 @@ function whatsappStudent() {
       status: 'sent',
       platform: 'WhatsApp'
     };
-    localStorageDatabase.saveMessage(log);
-    fetchMessagesFromServer();
+    firebaseDatabase.saveMessage(log)
+      .then(() => fetchMessagesFromServer())
+      .catch(error => console.error('Error saving message:', error));
   } else {
     alert('Student phone number not available.');
   }
@@ -588,8 +633,9 @@ function sendCustomWhatsAppMessage() {
       status: 'sent',
       platform: 'WhatsApp'
     };
-    localStorageDatabase.saveMessage(log);
-    fetchMessagesFromServer();
+    firebaseDatabase.saveMessage(log)
+      .then(() => fetchMessagesFromServer())
+      .catch(error => console.error('Error saving message:', error));
     
     // Clear and hide the custom message area
     document.getElementById('customMessageContent').value = '';
@@ -600,20 +646,24 @@ function sendCustomWhatsAppMessage() {
 }
 
 function exportMessageLogs() {
-  const today = new Date();
-  const dateString = today.toISOString().split('T')[0];
-  const csvContent = "data:text/csv;charset=utf-8,"
-    + "Timestamp,Sender,Recipient,Student Name,Roll Number,Parent Name,Message,Status,Platform,Duration\n"
-    + messageLogs.map(e => {
-      return `${e.timestamp},${e.sender},${e.recipient},${e.studentName || ''},${e.studentRoll || ''},${e.parentName || ''},${e.message},${e.status},${e.platform || 'SMS'},${e.duration || 'N/A'}`;
-    }).join("\n");
+  firebaseDatabase.getAllMessages()
+    .then(messages => {
+      const today = new Date();
+      const dateString = today.toISOString().split('T')[0];
+      const csvContent = "data:text/csv;charset=utf-8,"
+        + "Timestamp,Sender,Recipient,Student Name,Roll Number,Parent Name,Message,Status,Platform,Duration\n"
+        + messages.map(e => {
+          return `${e.timestamp},${e.sender},${e.recipient},${e.studentName || ''},${e.studentRoll || ''},${e.parentName || ''},${e.message},${e.status},${e.platform || 'SMS'},${e.duration || 'N/A'}`;
+        }).join("\n");
 
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", `message_logs_${dateString}.csv`);
-  document.body.appendChild(link);
-  link.click();
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `message_logs_${dateString}.csv`);
+      document.body.appendChild(link);
+      link.click();
+    })
+    .catch(error => console.error('Error exporting logs:', error));
 }
 
 function callCR(rollNumber) {
@@ -650,59 +700,6 @@ function sendBulkSMSMessage(parentPhones, message) {
   window.location.href = smsUrl;
 }
 
-function sendBulkMessage(half) {
-  const bulkMessageContent = document.getElementById('bulkMessageContent').value;
-  if (bulkMessageContent.trim() === '') {
-    alert('Please enter a message.');
-    return;
-  }
-
-  const parentPhones = students.map(s => s.parentPhone);
-  const halfSize = Math.ceil(parentPhones.length / 3);
-  let phonesForHalf;
-
-  if (half === 'first') {
-    phonesForHalf = parentPhones.slice(0, halfSize);
-  } else if (half === 'second') {
-    phonesForHalf = parentPhones.slice(halfSize, halfSize * 2);
-  } else if (half === 'third') {
-    phonesForHalf = parentPhones.slice(halfSize * 2);
-  }
-
-  const whatsappBtn = document.getElementById('whatsappBtn');
-  const smsBtn = document.getElementById('smsBtn');
-
-  if (whatsappBtn.checked) {
-    sendBulkWhatsAppMessage(phonesForHalf, bulkMessageContent);
-  } else if (smsBtn.checked) {
-    sendBulkSMSMessage(phonesForHalf, bulkMessageContent);
-  } else {
-    alert('Please select a platform (WhatsApp or SMS).');
-  }
-
-  // Log the bulk message
-  phonesForHalf.forEach(phone => {
-    const student = students.find(s => s.parentPhone === phone);
-    const log = {
-      sender: 'NVS Murthy',
-      recipient: phone,
-      studentName: student.name,
-      studentRoll: student.rollNumber,
-      parentName: student.parentName,
-      message: bulkMessageContent,
-      timestamp: new Date().toISOString(),
-      status: 'sent',
-      platform: whatsappBtn.checked ? 'WhatsApp' : 'SMS'
-    };
-    localStorageDatabase.saveMessage(log);
-  });
-  fetchMessagesFromServer();
-
-  // Clear and hide the bulk message area
-  document.getElementById('bulkMessageContent').value = '';
-  document.getElementById('bulkMessageForm').style.display = 'none';
-}
-
 function sendBulkMessage(group) {
   const message = document.getElementById('bulkMessageContent').value;
   if (message.trim() === '') {
@@ -734,7 +731,23 @@ function sendBulkMessage(group) {
   // Open SMS app with pre-filled message for bulk sending
   window.location.href = `sms:${phoneNumbers}?body=${encodeURIComponent(message)}`;
 
-  // Log the bulk message
+  // Log the bulk message to Firebase
+  const bulkLog = {
+    sender: 'NVS Murthy',
+    recipients: parentPhones,
+    message: message,
+    timestamp: new Date().toISOString(),
+    status: 'sent',
+    platform: 'SMS (Bulk)',
+    group: group
+  };
+
+  // Save bulk message log
+  firebaseDatabase.saveMessage(bulkLog)
+    .then(() => console.log('Bulk message logged successfully'))
+    .catch(error => console.error('Error saving bulk message:', error));
+
+  // Log individual messages
   parentPhones.forEach(phone => {
     const student = students.find(s => s.parentPhone === phone);
     const log = {
@@ -746,12 +759,24 @@ function sendBulkMessage(group) {
       message: message,
       timestamp: new Date().toISOString(),
       status: 'sent',
-      platform: 'SMS'
+      platform: 'SMS',
+      bulkGroup: group
     };
-    localStorageDatabase.saveMessage(log);
+    firebaseDatabase.saveMessage(log)
+      .then(() => console.log('Individual message logged successfully'))
+      .catch(error => console.error('Error saving individual message:', error));
   });
 
+  // Hide the bulk message form after sending
+  document.getElementById('bulkMessageForm').style.display = 'none';
+  
+  // Fetch updated messages
   fetchMessagesFromServer();
+
+  // Clear the bulk message content
+  document.getElementById('bulkMessageContent').value = '';
+
+  alert(`Bulk message sent to ${group} group (${parentPhones.length} recipients)`);
 }
 
 // Add this function to add sample data (for testing purposes)
