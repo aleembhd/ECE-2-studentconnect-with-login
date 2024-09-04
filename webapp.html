@@ -4,7 +4,7 @@
     <title>StudentConnect - Enhanced Messaging System</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+
     <style>
         /* Additional styles remain the same */
     </style>
@@ -68,7 +68,7 @@
         </div>
 
         <div class="button-container">
-            <button class="allparents" onclick="toggleBulkMessageForm()">All Parents</button>
+            <button id="allParentsBtn" class="allparents">All Parents</button>
             <button class="print-btn" onclick="openPrintModal()" style="font-weight: bold;">Print</button>
         </div>
         
@@ -81,9 +81,9 @@
           <h2>Bulk Message</h2>
           <textarea id="bulkMessageContent" placeholder="Enter your message for all parents"></textarea>
           <div class="action-buttons vertical">
-            <button onclick="sendBulkMessage('first')">First Half (1-25)</button>
-            <button onclick="sendBulkMessage('second')">Second Half (26-50)</button>
-            <button onclick="sendBulkMessage('third')">Third Half (51+)</button>
+            <button onclick="sendBulkMessage('first')">First Group (1-25)</button>
+            <button onclick="sendBulkMessage('second')">Second Group (26-50)</button>
+            <button onclick="sendBulkMessage('third')">Third Group (51+)</button>
           </div>
         </div>
 
@@ -126,24 +126,10 @@
           <div id="printContent"></div>
         </div>
     </div>
+    <!-- Add these script tags just before your script.js -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
-    <script>
-        function logout() {
-            // Clear any user-related data from localStorage
-            localStorage.removeItem('userToken');
-            
-            // Redirect to the login page
-            window.location.href = 'index.html';
-        }
-
-        // Check if user is logged in when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!localStorage.getItem('userToken')) {
-                // If no user token is found, redirect to login page
-                window.location.href = 'index.html';
-            }
-        });
-    </script>
 </body>
 
 </html>
