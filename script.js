@@ -799,11 +799,15 @@ const students = [
    document.getElementById('bulkMessageContent').value = message;
  }
 
- function openDialPad() {
-   const studentPhone = document.getElementById('studentPhone').textContent;
-   const studentName = document.getElementById('studentName').textContent;
-   const studentRoll = document.getElementById('studentRoll').textContent;
-   const parentName = document.getElementById('parentName').textContent;
+ function openDialPad(event) {
+   // Get the parent profile card of the clicked button
+   const profileCard = event.target.closest('.profile-card');
+  
+   // Extract information from this specific card
+   const studentPhone = profileCard.querySelector('#studentPhone').textContent;
+   const studentName = profileCard.querySelector('#studentName').textContent;
+   const studentRoll = profileCard.querySelector('#studentRoll').textContent;
+   const parentName = profileCard.querySelector('#parentName').textContent;
 
    localStorage.setItem('dialpadInfo', JSON.stringify({
      phone: studentPhone,
