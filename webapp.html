@@ -1,4 +1,4 @@
-<html>
+<html></html>
 
 <head>
     <title>StudentConnect - Enhanced Messaging System</title>
@@ -7,6 +7,34 @@
 
     <style>
         /* Additional styles remain the same */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .button-row button {
+            flex: 1;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .full-width button {
+            width: 100%;
+        }
     </style>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -42,20 +70,22 @@
             <p><strong>Parent Name:</strong> <span id="parentName"></span></p>
             <p><strong>Parent Phone:</strong> <span id="parentPhone"></span></p>
             <p><strong>Student Phone:</strong> <span id="studentPhone"></span></p>
-        <div class="action-buttons">
-            <div class="button-row firstflex">
-              <button onclick="callParent()">Call Parent</button>
-              <button onclick="callStudent()">Call Student</button>
+            <div class="action-buttons">
+                <div class="button-row firstflex">
+                    <button onclick="callParent()">Call Parent</button>
+                    <button onclick="callStudent()">Call Student</button>
+                </div>
+                <div class="button-row secondflex ">
+                    <button id="whatsappParentBtn">WhatsApp Parent</button>
+                    <button onclick="whatsappStudent()">WhatsApp Student</button>
+                </div>
             </div>
-            <div class="button-row secondflex ">
-              <button id="whatsappParentBtn">WhatsApp Parent</button>
-              <button onclick="whatsappStudent()">WhatsApp Student</button>
+            <!-- Add the new Dial Number button here -->
+            <button id="dialNumberBtn" onclick="openDialPad()" class="full-width-button">Dial Number</button>
+            <div id="customMessageArea" style="display:none;">
+                <textarea id="customMessageContent" placeholder="Enter your custom message"></textarea>
+                <button id="sendCustomMessageBtn">Send WhatsApp Message</button>
             </div>
-          </div>
-          <div id="customMessageArea" style="display:none;">
-            <textarea id="customMessageContent" placeholder="Enter your custom message"></textarea>
-            <button id="sendCustomMessageBtn">Send WhatsApp Message</button>
-          </div>
         </div>
 
         <div id="messageForm" class="message-form" style="display:none;">
