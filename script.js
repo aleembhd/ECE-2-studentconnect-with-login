@@ -68,9 +68,7 @@ const students = [
   { rollNumber: '23WJ5A0414', name: 'MAHADEVUNI NAVYA', parentPhone: '9948128561', parentName: '', studentPhone: '9704484691' },
   { rollNumber: '23WJ5A0415', name: 'MD SALMAN', parentPhone: '8106150473', parentName: 'MD Khaja', studentPhone: '9652047325' },
   { rollNumber: '21WJ1A04K1', name: 'M. ADNAN', parentPhone: '9642337786', parentName: 'Nayeem hussain', studentPhone: '8008065856' },
-   // ... [rest of the students remain unchanged]
  ];
- 
  
  let messageLogs = [];
  
@@ -306,8 +304,12 @@ const students = [
    const endDate = new Date(document.getElementById('endDate').value);
    endDate.setHours(23, 59, 59, 999); // Set to end of day
  
-   return firebaseDatabase.getAllMessages()
-     .then(messages => {
+   return firebase.database().ref('messageLogs').once('value')
+     .then(snapshot => {
+       const messages = [];
+       snapshot.forEach(childSnapshot => {
+         messages.push(childSnapshot.val());
+       });
        return messages.filter(log => {
          const logDate = new Date(log.timestamp);
          return logDate >= startDate && logDate <= endDate;
