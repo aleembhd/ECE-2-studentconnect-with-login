@@ -233,6 +233,7 @@
     
             let phoneNumber = '';
             let deleteInterval;
+            let callStartTime;
     
             function updateDisplay() {
                 display.textContent = phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
@@ -307,6 +308,7 @@
     
             callButton.addEventListener('click', () => {
                 if (phoneNumber) {
+                    callStartTime = new Date();
                     window.location.href = `tel:${phoneNumber}`;
                     setTimeout(() => {
                         callStatusPopup.style.display = 'block';
@@ -316,6 +318,9 @@
     
             function handleCallResponse(wasAnswered) {
                 const dialpadInfo = JSON.parse(localStorage.getItem('dialpadInfo')) || {};
+                const callEndTime = new Date();
+                const duration = wasAnswered ? Math.round((callEndTime - callStartTime) / 1000) : 0; // Duration in seconds
+
                 const callLog = {
                     timestamp: new Date().toISOString(),
                     sender: 'NVS Murthy',
@@ -326,7 +331,7 @@
                     message: `Phone call to ${phoneNumber} - ${wasAnswered ? 'Answered' : 'Not Answered'}`,
                     status: wasAnswered ? 'answered' : 'not answered',
                     platform: 'Phone',
-                    duration: 'N/A'
+                    duration: wasAnswered ? `${duration} seconds` : 'N/A'
                 };
 
                 // Save to Firebase
