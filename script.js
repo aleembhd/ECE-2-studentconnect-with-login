@@ -300,79 +300,72 @@ const students = [
  }
  
  function filterData() {
-   const startDate = new Date(document.getElementById('startDate').value);
-   const endDate = new Date(document.getElementById('endDate').value);
-   endDate.setHours(23, 59, 59, 999); // Set to end of day
- 
-   return firebase.database().ref('messageLogs').once('value')
-     .then(snapshot => {
-       const messages = [];
-       snapshot.forEach(childSnapshot => {
-         messages.push(childSnapshot.val());
-       });
-       return messages.filter(log => {
-         const logDate = new Date(log.timestamp);
-         return logDate >= startDate && logDate <= endDate;
-       });
-     });
- }
+  return firebase.database().ref('messageLogs').once('value')
+    .then(snapshot => {
+      const messages = [];
+      snapshot.forEach(childSnapshot => {
+        messages.push(childSnapshot.val());
+      });
+      return messages;
+    });
+}
  
  function generatePrintableTable(data) {
-   let tableHtml = `
-     <div style="text-align: center; margin-bottom: 20px;">
-       <p>Message Logs Report</p>
-     </div>
-     <table border="1">
-       <thead>
-         <tr>
-           <th>Date</th>
-           <th>Sender</th>
-           <th>Recipient</th>
-           <th>Student Name</th>
-           <th>Roll Number</th>
-           <th>Parent Name</th>
-           <th style="width: 25%;">Message</th>
-           <th>Status</th>
-           <th>Platform</th>
-           <th>Duration</th>
-         </tr>
-       </thead>
-       <tbody>
-   `;
- 
-   let currentDate = '';
-   data.forEach(log => {
-     const date = new Date(log.timestamp);
-     const dateString = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-     const highlightClass = dateString !== currentDate ? 'highlight' : '';
-     currentDate = dateString;
- 
-     tableHtml += `
-       <tr class="${highlightClass}">
-         <td>${dateString}</td>
-         <td>${log.sender}</td>
-         <td>${log.recipient}</td>
-         <td>${log.studentName || ''}</td>
-         <td>${log.studentRoll || ''}</td>
-         <td>${log.parentName || ''}</td>
-         <td style="width: 25%;">${log.message}</td>
-         <td>${log.status}</td>
-         <td>${log.platform || 'SMS'}</td>
-         <td>${log.duration || 'N/A'}</td>
-       </tr>
-     `;
-   });
- 
-   tableHtml += `
-       </tbody>
-     </table>
-     <div style="text-align: center; margin-top: 20px;">
-       <!-- <p>© 2024 Croxton Technologies. All rights reserved.</p> -->
-     </div>
-   `;
- 
-   return tableHtml;
- }
+  let tableHtml = `
+    <div style="text-align: center; margin-bottom: 20px;">
+      <p>Message Logs Report</p>
+    </div>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Sender</th>
+          <th>Recipient</th>
+          <th>Student Name</th>
+          <th>Roll Number</th>
+          <th>Parent Name</th>
+          <th style="width: 25%;">Message</th>
+          <th>Status</th>
+          <th>Platform</th>
+          <th>Duration</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  let currentDate = '';
+  data.forEach(log => {
+    const date = new Date(log.timestamp);
+    const dateString = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const highlightClass = dateString !== currentDate ? 'highlight' : '';
+    currentDate = dateString;
+
+    tableHtml += `
+      <tr class="${highlightClass}">
+        <td>${dateString}</td>
+        <td>${log.sender || 'N/A'}</td>
+        <td>${log.recipient || 'N/A'}</td>
+        <td>${log.studentName || 'N/A'}</td>
+        <td>${log.studentRoll || 'N/A'}</td>
+        <td>${log.parentName || 'N/A'}</td>
+        <td style="width: 25%;">${log.message || 'N/A'}</td>
+        <td>${log.status || 'N/A'}</td>
+        <td>${log.platform || 'N/A'}</td>
+        <td>${log.duration || 'N/A'}</td>
+      </tr>
+    `;
+  });
+
+  tableHtml += `
+      </tbody>
+    </table>
+    <div style="text-align: center; margin-top: 20px;">
+      <!-- <p>© 2024 Croxton Technologies. All rights reserved.</p> -->
+    </div>
+  `;
+
+  return tableHtml;
+}
  
  function showPrintPreview() {
    filterData().then(filteredData => {
