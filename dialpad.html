@@ -339,6 +339,8 @@
                     .then(() => {
                         console.log('Call log saved successfully');
                         alert('Call log saved successfully');
+                        // Notify the main page to update the message logs
+                        window.opener.postMessage('updateMessageLogs', '*');
                     })
                     .catch(error => {
                         console.error('Error saving call log:', error);
@@ -347,7 +349,7 @@
 
                 callStatusPopup.style.display = 'none';
                 setTimeout(() => {
-                    window.history.back(); // This will navigate to the previous page
+                    window.close(); // Close the dialpad window
                 }, 1000);
             }
     
