@@ -342,10 +342,10 @@
                         // Notify the main page to update the message logs
                         window.opener.postMessage('updateMessageLogs', '*');
                     })
-                    .catch(error => {
-                        console.error('Error saving call log:', error);
-                        alert('Error saving call log. Please try again.');
-                    });
+                    // .catch(error => {
+                    //     console.error('Error saving call log:', error);
+                    //     alert('Error saving call log. Please try again.');
+                    // });
 
                 callStatusPopup.style.display = 'none';
                 setTimeout(() => {
