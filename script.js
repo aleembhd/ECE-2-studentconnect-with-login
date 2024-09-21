@@ -300,18 +300,23 @@ const students = [
    }
    
    function filterData() {
+    const startDate = new Date(document.getElementById('startDate').value);
+    const endDate = new Date(document.getElementById('endDate').value);
+    endDate.setHours(23, 59, 59, 999); // Set to end of day
+
     return firebase.database().ref('messageLogs').once('value')
       .then(snapshot => {
         const messages = [];
         snapshot.forEach(childSnapshot => {
           const message = childSnapshot.val();
-          // Include all existing messages
-          messages.push(message);
+          const messageDate = new Date(message.timestamp);
           
-          // Specifically include dialpad logs for students from 22WJ1A0465 to 21WJ1A04K1
-          if (message.platform === 'Phone' && 
-              message.studentRoll && 
-              (message.studentRoll >= '22WJ1A0465' && message.studentRoll <= '21WJ1A04K1')) {
+          // Ensure recipient is always 10 digits
+          if (message.recipient && message.recipient.startsWith('+91')) {
+            message.recipient = message.recipient.slice(3);
+          }
+          
+          if (messageDate >= startDate && messageDate <= endDate) {
             messages.push(message);
           }
         });
@@ -349,11 +354,12 @@ const students = [
       const highlightClass = dateString !== currentDate ? 'highlight' : '';
       currentDate = dateString;
   
+      const formattedPhone = log.recipient ? log.recipient.slice(-10) : 'N/A';
       tableHtml += `
         <tr class="${highlightClass}">
           <td>${dateString}</td>
           <td>${log.sender || 'N/A'}</td>
-          <td>${log.recipient || 'N/A'}</td>
+          <td>${formattedPhone}</td>
           <td>${log.studentName || 'N/A'}</td>
           <td>${log.studentRoll || 'N/A'}</td>
           <td>${log.parentName || 'N/A'}</td>
@@ -445,21 +451,33 @@ const students = [
              </div>
              <div class="no-print" style="text-align: center; margin-top: 20px;">
                <button onclick="window.print()" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; margin: 5px; cursor: pointer;">Print</button>
-               <!--  <button onclick="savePDF()" style="background-color: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; margin: 5px; cursor: pointer;">Save as PDF</button> -->
+               <button onclick="downloadCSV()" style="background-color: #008CBA; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; margin: 5px; cursor: pointer;">Download CSV</button>
              </div>
-             <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
              <script>
-               function savePDF() {
-                 const element = document.body;
-                 const opt = {
-                   margin:       10,
-                   filename:     'Message_Logs_${startDate}_to_${endDate}.pdf',
-                   image:        { type: 'jpeg', quality: 0.98 },
-                   html2canvas:  { scale: 2, useCORS: true },
-                   jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' },
-                   pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-                 };
-                 html2pdf().from(element).set(opt).save();
+               function downloadCSV() {
+                 const rows = document.querySelectorAll('table tr');
+                 let csv = [];
+                 for (let i = 0; i < rows.length; i++) {
+                   let row = [], cols = rows[i].querySelectorAll('td, th');
+                   for (let j = 0; j < cols.length; j++) {
+                     let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ');
+                     data = data.replace(/"/g, '""');
+                     row.push('"' + data + '"');
+                   }
+                   csv.push(row.join(','));
+                 }
+                 let csvContent = csv.join('\\n');
+                 let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                 let link = document.createElement('a');
+                 if (link.download !== undefined) {
+                   let url = URL.createObjectURL(blob);
+                   link.setAttribute('href', url);
+                   link.setAttribute('download', 'Message_Logs_${startDate}_to_${endDate}.csv');
+                   link.style.visibility = 'hidden';
+                   document.body.appendChild(link);
+                   link.click();
+                   document.body.removeChild(link);
+                 }
                }
                window.onload = function() {
                  // Automatically open print dialog when the page loads
