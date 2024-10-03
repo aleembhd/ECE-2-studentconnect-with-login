@@ -662,13 +662,15 @@ const students = [
      const customMessage = document.getElementById('customMessageContent').value;
      
      if (parentPhone && customMessage.trim() !== '') {
+       // Format the phone number with country code
+       const formattedPhone = `+91${parentPhone.replace(/\D/g, '')}`;
        const message = encodeURIComponent(customMessage);
-       window.open(`https://wa.me/${parentPhone}?text=${message}`, '_blank');
+       window.open(`https://wa.me/${formattedPhone}?text=${message}`, '_blank');
        
        // Log the custom WhatsApp message
        const log = {
          sender: 'NVS Murthy',
-         recipient: parentPhone,
+         recipient: formattedPhone,
          studentName: studentName,
          studentRoll: studentRoll,
          parentName: parentName,
